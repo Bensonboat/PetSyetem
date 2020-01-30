@@ -1,13 +1,19 @@
 <template>
   <div id="app">
-    <div id="nav">
-      <router-link to="/">首頁</router-link> |
-      <router-link to="/about">About</router-link> |
-      <router-link to="/list">工作單</router-link>
-    </div>
-    <router-view/>
+    <nav-tab/>
   </div>
 </template>
+
+<script>
+import navTab from './components/NavTab'
+export default{
+  name: 'App',
+  components: {
+    navTab
+  }
+}
+</script>
+
 
 <style>
 #app {
@@ -16,10 +22,11 @@
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-}
-
-#nav {
-  padding: 30px;
+  height: 100vh;
+  background-color: #eef9bf;
+  overflow: scroll;
+  padding: 0;
+  margin: 0
 }
 
 #nav a {
@@ -30,4 +37,5 @@
 #nav a.router-link-exact-active {
   color: #42b983;
 }
+
 </style>
