@@ -11,19 +11,24 @@
 <script>
 export default {
     name: "navTab"
-
-
 }
 
 </script>
 
 <style lang="sass" scoped>
 .nav_tab
-  background-color: #fff
-  padding: 8px 12px
+  background-color: #216583
+  padding: 15px 12px
   display: flex
   justify-content: space-around
 
-.tab
+#nav .tab
   text-decoration: none
+  color: #eee
+  opacity: .5
+  font-size: 15px
+
+#nav .router-link-exact-active
+    opacity: 1
+
 </style>

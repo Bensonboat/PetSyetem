@@ -1,6 +1,7 @@
 <template>
   <div id="app">
     <nav-tab/>
+    <!-- <img src="./assets/No.018.jpg" alt=""> -->
   </div>
 </template>
 
@@ -23,7 +24,8 @@ export default{
   text-align: center;
   color: #2c3e50;
   height: 100vh;
-  background-color: #eef9bf;
+  /* background-color: #eef9bf; */
+  background-color: #e8f1f5;
   overflow: scroll;
   padding: 0;
   margin: 0
@@ -34,8 +36,8 @@ export default{
   color: #2c3e50;
 }
 
-#nav a.router-link-exact-active {
+/* #nav a.router-link-exact-active {
   color: #42b983;
-}
+} */
 
 </style>

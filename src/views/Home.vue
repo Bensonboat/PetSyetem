@@ -5,17 +5,18 @@
       <div>
         <div class="phone_search">
           <input type="text" v-model="phone" placeholder="請輸入電話" :class="[this.phone !== '' ? 'number_font' : '', this.showCard ? 'card_showing' : '']">
-          <div v-if="this.phone !== ''" @click="clearPhone" class="clear_phone">x</div>
+          <div v-if="this.phone !== ''" @click="clearPhone" class="clear_phone phone_blcok_icon">x</div>
+          <a-icon type="search" @click="phoneConfirm" class="phone_blcok_icon"/>
           <!-- <div @click="phoneConfirm">search</div> -->
         </div>
         <div>
-          <button class="phone_confirm" @click="phoneConfirm">確定</button>
+          <!-- <button class="phone_confirm" @click="phoneConfirm">確定</button> -->
         </div>
       </div>
     </div>
-    <div class="show_card_block">
+    <div>
       <transition name="fade">
-        <pet-card v-if="showCard"/>
+        <pet-card v-if="showCard" class="show_card_block"/>
       </transition>
     </div>
   </div>
@@ -38,7 +39,7 @@ export default {
   data() {
     return {
       time: '',
-      phone: '',
+      phone: '0912345678',
       showCard: false
     }
   },
@@ -81,9 +82,11 @@ export default {
 };
 </script>
 
-<style scoped lang='sass'>
+<style lang='sass'>
   $fz-color: rgba(0,0,0,.4)
-  $main-btn: #49D49D
+  // $main-btn: #49D49D
+  // $main-btn: #99ddcc
+  $main-btn: #65c0ba
 
   .home
     margin: 30px auto 0 auto
@@ -100,31 +103,32 @@ export default {
     
     input
       outline: none
+      border: none
       width: 100%
       letter-spacing: 2px
       height: 50px
-      font-size: 15px
+      font-size: 12px
       color: $fz-color
       font-weight: 700
       font-family: 'Courier New'
 
     .number_font
-      font-size: 26px
+      font-size: 18px
 
-  .phone_confirm
-    background-color: #fff
-    box-shadow: 1px 3px 5px rgba(0,0,0,.1)
-    width: 100px
-    height: 40px
-    font-size: 16px
-    margin-top: 30px
-    background-color: $main-btn
-    color: #fff
-    letter-spacing: 2px
-    border-radius: 15px
-    border: none
-    outline: none
-    cursor: pointer
+  // .phone_confirm
+  //   background-color: #fff
+  //   box-shadow: 1px 3px 5px rgba(0,0,0,.1)
+  //   width: 100px
+  //   height: 40px
+  //   font-size: 16px
+  //   margin-top: 30px
+  //   background-color: $main-btn
+  //   color: #fff
+  //   letter-spacing: 2px
+  //   border-radius: 15px
+  //   border: none
+  //   outline: none
+  //   cursor: pointer
 
   .time_block
     margin-bottom: 10px
@@ -154,10 +158,14 @@ export default {
     width: 80vw
 
   .clear_phone
-    font-size: 18px
-    color: $fz-color
+    // font-size: 18px
+    // color: $fz-color
     font-weight: 700
     font-family: 'Papyrus'
-    margin-right: 5px
+    margin-right: 12px
+
+  .phone_blcok_icon
+    font-size: 20px
+    color: rgba(0,0,0,.2)
 
 </style>
