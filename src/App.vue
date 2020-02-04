@@ -28,7 +28,8 @@ export default{
   background-color: #e8f1f5;
   overflow: scroll;
   padding: 0;
-  margin: 0
+  margin: 0;
+  -webkit-overflow-scrolling: touch;
 }
 
 #nav a {

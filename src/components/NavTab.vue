@@ -16,8 +16,10 @@ export default {
 </script>
 
 <style lang="sass" scoped>
+$second_color: #7697a0
+
 .nav_tab
-  background-color: #216583
+  background-color: $second_color
   padding: 15px 12px
   display: flex
   justify-content: space-around

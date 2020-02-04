@@ -39,7 +39,7 @@ export default {
                 feed: this.feed
             }
 
-            console.log(data, 'hhh')
+            // console.log(data, 'hhh')
             this.$store.commit('test/addPetName', data)
 
             this.$router.push('/')

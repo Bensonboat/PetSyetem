@@ -2,22 +2,39 @@
   <div>
     <div class="home" :class="[this.showCard ? 'card_showing' : '']">
       <!-- <div class="time_block">{{time}}</div> -->
-      <div>
-        <div class="phone_search">
+      <div :style="{display: 'flex'}">
+        <div v-if="showPhoneSearch" class="phone_search">
           <input type="text" v-model="phone" placeholder="請輸入電話" :class="[this.phone !== '' ? 'number_font' : '', this.showCard ? 'card_showing' : '']">
           <div v-if="this.phone !== ''" @click="clearPhone" class="clear_phone phone_blcok_icon">x</div>
-          <a-icon type="search" @click="phoneConfirm" class="phone_blcok_icon"/>
-          <!-- <div @click="phoneConfirm">search</div> -->
+          <!-- <a-icon type="search" @click="phoneConfirm" class="phone_blcok_icon"/> -->
         </div>
-        <div>
-          <!-- <button class="phone_confirm" @click="phoneConfirm">確定</button> -->
+        <div v-else :style="[nameDataBlock]">
+            <a-input
+              placeholder="請輸入名稱"
+              v-model="name_data.name"
+              :style="[petNameBlock]"
+            />
+            <div class="feed_select_block">
+              <div :style="[feedSelectBlcok]">犬種</div>
+              <a-select defaultValue="Amy" style="width: 100px" v-model="name_data.feed">
+                <a-select-option value="jack">Jack</a-select-option>
+                <a-select-option value="Amy">Amy</a-select-option>
+                <a-select-option value="disabled" disabled>Disabled</a-select-option>
+                <a-select-option value="Yiminghe">yiminghe</a-select-option>
+              </a-select>
+            </div>
+        </div>
+        <div :style="[switchIcon]" @click="switchSearchMode(showPhoneSearch)">
+          <a-icon type="sync"/>
         </div>
       </div>
+      <button v-if="!showCard" class="search_btn" @click="phoneConfirm">確認</button>
     </div>
     <div>
       <transition name="fade">
         <pet-card v-if="showCard" class="show_card_block"/>
       </transition>
+      <button v-if="showCard" class="search_btn" @click="phoneConfirm" :style="{marginBottom: '30px'}">確認</button>
     </div>
   </div>
 </template>
@@ -40,7 +57,42 @@ export default {
     return {
       time: '',
       phone: '0912345678',
-      showCard: false
+      name_data: {
+        name: '',
+        feed: 'Amy'
+      },
+      showPhoneSearch: true,
+      showCard: false,
+      switchIcon: {
+        display: 'flex',
+        alignSelf: 'center',
+        fontSize: '15px',
+        marginLeft: '10px',
+        color: '#7697a0'
+      },
+      feedSelectBlcok: {
+        marginRight: '10px',
+        display: 'flex',
+        alignItems: 'center',
+        fontSize: '12px'
+      },
+      petNameBlock: {
+        width: '40%',
+        letterSpacing: '2px',
+        fontSize: '12px',
+        fontWeight: 700,
+        color: '#216583',
+      },
+      nameDataBlock: {
+        width: '100%',
+        display: 'flex', 
+        backgroundColor: 'white', 
+        padding: '8px 12px', 
+        height: '50px', 
+        borderRadius: '5px', 
+        justifyContent: 'space-between', 
+        boxShadow: '1px 3px 5px rgba(0,0,0,.1)'
+      }
     }
   },
   created(){
@@ -48,7 +100,7 @@ export default {
   },
   methods: {
     phoneConfirm(){
-      alert(this.phone)
+      // alert(this.phone)
       this.showCard = true
     },
     clearPhone(){
@@ -57,6 +109,9 @@ export default {
     },
     createName(){
       this.$router.push({ path: 'createName'})
+    },
+    switchSearchMode(change){
+      this.showPhoneSearch = !change
     },
     getCurrentTime(){
       let that = this;
@@ -86,7 +141,7 @@ export default {
   $fz-color: rgba(0,0,0,.4)
   // $main-btn: #49D49D
   // $main-btn: #99ddcc
-  $main-btn: #65c0ba
+  $main-btn: #4a707a
 
   .home
     margin: 30px auto 0 auto
@@ -96,10 +151,11 @@ export default {
     box-shadow: 1px 3px 5px rgba(0,0,0,.1)
     padding: 8px 12px
     height: 50px
-    border-radius: 15px
+    border-radius: 5px
     background-color: #fff
     display: flex
     align-items: center
+    width: 100%
     
     input
       outline: none
@@ -155,7 +211,7 @@ export default {
 
   .show_card_block
     margin: 30px auto 0 auto
-    width: 80vw
+    width: 85vw
 
   .clear_phone
     // font-size: 18px
@@ -167,5 +223,29 @@ export default {
   .phone_blcok_icon
     font-size: 20px
     color: rgba(0,0,0,.2)
+
+  .feed_select_block
+    display: flex
+    align-items: center 
+
+  .search_btn
+    margin-top: 15px
+    letter-spacing: 2px
+    width: 70px
+    font-size: 12px
+    user-select: none
+    -ms-touch-action: manipulation
+    touch-action: manipulation
+    height: 32px
+    padding: 0 15px
+    border-radius: 4px
+    position: relative
+    display: inline-block
+    font-weight: 400
+    white-space: nowrap
+    text-align: center
+    outline: none
+    background-color: $main-btn
+    color: #eee
 
 </style>

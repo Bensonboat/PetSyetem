@@ -1,12 +1,12 @@
 <template>
-  <div :style="{ paddingBottom: '30px' }">
+  <div>
     <div @click="addNewCard" class="add_btn">
         <a-icon type="plus-circle" />
     </div>
     <div
       v-for="(item, index) in allCards"
       :key="index"
-      :style="{ margin: '15px 0' }"
+      :style="{marginBottom: '15px'}"
     >
       <!-- <a-card size="small" :title="item.title" class="card_block"> -->
       <a-card size="small" class="card_block" :class="[item.status ? 'select_border' : '']">
@@ -128,7 +128,8 @@
             </div>
           </div>
           <div :style="{padding: '4px 5px'}">
-            <a-input placeholder="備註" :style="[commentInput]" v-model="item.comment"/>
+            <a-icon v-if="!item.showComment" type="down-circle" @click="showCommentBlock(index)"/>
+            <a-input v-else placeholder="備註" :style="[commentInput]" v-model="item.comment"/>
           </div>
           <div :style="{padding: '0 5px', display: 'flex', justifyContent: 'space-between', height: '35px', alignItems: 'flex-end'}">
             <!-- <a-input placeholder="$$" :style="[priceInput]" v-model="item.price"/> -->
@@ -175,7 +176,7 @@ export default {
         letterSpacing: '2px',
         fontSize: '20px',
         fontWeight: 700,
-        color: '#216583'
+        color: '#4a707a'
       },
       feedSelectBlcok: {
         marginRight: '10px',
@@ -201,6 +202,7 @@ export default {
           bug: false,
           herbWash: false,
           messyHair: false,
+          showComment: false,
           comment: '留頭尾',
           price: 300,
           status: true
@@ -216,6 +218,7 @@ export default {
           bug: true,
           herbWash: true,
           messyHair: true,
+          showComment: false,
           comment: '腳臭',
           price: 900,
           status: false
@@ -224,9 +227,6 @@ export default {
     }
   },
   methods: {
-    onChange(e) {
-      console.log(`checked = ${e.target.checked}`);
-    },
     toggle(index, name, v) {
       this.allCards[index][name] = !v;
     },
@@ -242,6 +242,9 @@ export default {
         herbWash: false,
         messyHair: false
       });
+    },
+    showCommentBlock(index){
+      this.allCards[index]['showComment'] = true
     }
   }
 };
@@ -251,10 +254,14 @@ export default {
 $fz-color: rgba(0,0,0,.4)
 // $item-btn-bgc: #283c63
 // $item-btn-bgc: #008891
-$item-btn-bgc: #65c0ba
+// $item-btn-bgc: #65c0ba
 // $item-btn-color: #455d7a
-$item-btn-color: #fefaec
-$second-btn-color: #216583
+
+$main-btn-bgc: #4a707a
+
+// $item-btn-color: #fefaec
+// $second-btn-color: #216583
+$second-color: #7697a0
 
 
 .card_block
@@ -286,21 +293,21 @@ $second-btn-color: #216583
     padding: 4px 5px
 
 .ant-btn.ant-btn-background-ghost.salon_item
-    background-color: $item-btn-bgc
-    border-color: $item-btn-bgc
-    color: $item-btn-color
+    background-color: $main-btn-bgc
+    border-color: $main-btn-bgc
+    color: #eee
     width: 70px
     font-size: 12px
 
 .salon_item
     letter-spacing: 2px
-    width: 70px
+    width: 60px
     font-size: 12px
     user-select: none
     -ms-touch-action: manipulation
     touch-action: manipulation
     height: 32px
-    padding: 0 15px
+    padding: 0 12px
     border-radius: 4px
     position: relative
     display: inline-block
@@ -310,17 +317,18 @@ $second-btn-color: #216583
     outline: none
 
     .anticon-check
-        margin-left: 5px
+        margin-left: 1px
+        font-size: 10px
 
 .un_select
     background-color: transparent
-    border-color: $item-btn-bgc
-    color: $item-btn-bgc
+    border-color: $main-btn-bgc
+    color: $main-btn-bgc
 
 .is_selected
-    background-color: $item-btn-bgc
-    border-color: $item-btn-bgc
-    color: $item-btn-color
+    background-color: $main-btn-bgc
+    border-color: $main-btn-bgc
+    color: #eee
 
 .feed_select_block
     display: flex
@@ -329,7 +337,7 @@ $second-btn-color: #216583
 .add_btn
     text-align: right, 
     font-size: 20px
-    color: $second-btn-color  
+    color: $second-color
 
 .dog_card_select
   width: 100%
@@ -343,13 +351,12 @@ $second-btn-color: #216583
   font-weight: 700
 
   &.un_select
-      border: solid 1px $item-btn-bgc
-      color: $item-btn-bgc
+      border: solid 1px $main-btn-bgc
+      color: $main-btn-bgc
 
   &.is_selected
-      background-color: $second-btn-color
-      color: $item-btn-color
-
+      background-color: $main-btn-bgc
+      color: #eee
   .status_icon
     font-size: 16px
     margin-left: 10px
