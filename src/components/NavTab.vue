@@ -2,7 +2,7 @@
   <div>
     <div id="nav" class="nav_tab">
       <router-link to="/" class="tab">首頁</router-link>
-      <router-link to="/list" class="tab">工作單</router-link>
+      <router-link to="/List" class="tab">工作單</router-link>
     </div>
     <router-view/>
   </div>

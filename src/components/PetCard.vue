@@ -9,7 +9,7 @@
       :style="{ margin: '15px 0' }"
     >
       <!-- <a-card size="small" :title="item.title" class="card_block"> -->
-      <a-card size="small" class="card_block">
+      <a-card size="small" class="card_block" :class="[item.status ? 'select_border' : '']">
         <div>
           <div :style="[dogBasicData]">
             <a-input
@@ -19,7 +19,7 @@
             />
             <div class="feed_select_block">
               <div :style="[feedSelectBlcok]">犬種</div>
-              <a-select defaultValue="lucy" style="width: 120px">
+              <a-select defaultValue="Amy" style="width: 120px" v-model="item.feed">
                 <a-select-option value="jack">Jack</a-select-option>
                 <a-select-option value="lucy">Lucy</a-select-option>
                 <a-select-option value="disabled" disabled
@@ -31,236 +31,109 @@
           </div>
           <div :style="[itemBlock]">
             <div class="single_item_block">
-              <button 
-                v-if="!item.wash"
-                @click="toggle(index, 'wash', item.wash)"
-                class="salon_item un_select">洗澡
-              </button>
               <button
-                v-else
+                v-if="item.wash"
                 @click="toggle(index, 'wash', item.wash)"
                 class="salon_item is_selected">洗澡<a-icon type="check" />
               </button>
+              <button 
+                v-else
+                @click="toggle(index, 'wash', item.wash)"
+                class="salon_item un_select">洗澡
+              </button>
             </div>
             <div class="single_item_block">
-              <button 
-                v-if="!item.cut"
-                @click="toggle(index, 'cut', item.cut)"
-                class="salon_item un_select">美容
-              </button>
               <button
-                v-else
+                v-if="item.cut"
                 @click="toggle(index, 'cut', item.cut)"
                 class="salon_item is_selected">美容<a-icon type="check" />
               </button>
-              <!-- <a-button
-                type="primary"
-                v-model="item.cut"
-                v-if="!item.cut"
-                @click="toggle(index, 'cut', item.cut)"
-                class="salon_item"
-                :ghost="true"
-                >美容</a-button
-              > -->
-              <!-- <a-button
-                type="primary"
+              <button 
                 v-else
                 @click="toggle(index, 'cut', item.cut)"
-                class="salon_item"
-              >
-                美容
-                <a-icon type="check" />
-              </a-button> -->
+                class="salon_item un_select">美容
+              </button>
             </div>
             <div class="single_item_block">
-              <button 
-                v-if="!item.head"
-                @click="toggle(index, 'head', item.head)"
-                class="salon_item un_select">修頭
-              </button>
               <button
-                v-else
+                v-if="item.head"
                 @click="toggle(index, 'head', item.head)"
                 class="salon_item is_selected">修頭<a-icon type="check" />
               </button>
-              <!-- <a-button
-                type="primary"
-                v-model="item.head"
-                v-if="!item.head"
-                @click="toggle(index, 'head', item.head)"
-                class="salon_item"
-                :ghost="true"
-                >修頭</a-button
-              >
-              <a-button
-                type="primary"
+              <button 
                 v-else
                 @click="toggle(index, 'head', item.head)"
-                class="salon_item"
-              >
-                修頭
-                <a-icon type="check" />
-              </a-button> -->
+                class="salon_item un_select">修頭
+              </button>
             </div>
             <div class="single_item_block">
-              <button 
-                v-if="!item.feet"
-                @click="toggle(index, 'feet', item.feet)"
-                class="salon_item un_select">剃腳
-              </button>
               <button
-                v-else
+                v-if="item.feet"
                 @click="toggle(index, 'feet', item.feet)"
                 class="salon_item is_selected">剃腳<a-icon type="check" />
               </button>
-
-              <!-- <a-button
-                type="primary"
-                v-model="item.feet"
-                v-if="!item.feet"
-                @click="toggle(index, 'feet', item.feet)"
-                class="salon_item"
-                :ghost="true"
-                >剃腳</a-button
-              >
-              <a-button
-                type="primary"
+              <button 
                 v-else
                 @click="toggle(index, 'feet', item.feet)"
-                class="salon_item"
-              >
-                剃腳
-                <a-icon type="check" />
-              </a-button> -->
+                class="salon_item un_select">剃腳
+              </button>
             </div>
             <div class="single_item_block">
-              <button 
-                v-if="!item.mouth"
-                @click="toggle(index, 'mouth', item.mouth)"
-                class="salon_item un_select">剃嘴
-              </button>
               <button
-                v-else
+                v-if="item.mouth"
                 @click="toggle(index, 'mouth', item.mouth)"
                 class="salon_item is_selected">剃嘴<a-icon type="check" />
               </button>
-
-              <!-- <a-button
-                type="primary"
-                v-model="item.mouth"
-                v-if="!item.mouth"
-                @click="toggle(index, 'mouth', item.mouth)"
-                class="salon_item"
-                :ghost="true"
-                >剃嘴</a-button
-              >
-              <a-button
-                type="primary"
+              <button 
                 v-else
                 @click="toggle(index, 'mouth', item.mouth)"
-                class="salon_item"
-              >
-                剃嘴
-                <a-icon type="check" />
-              </a-button> -->
+                class="salon_item un_select">剃嘴
+              </button>
             </div>
             <div class="single_item_block">
-              <button 
-                v-if="!item.bug"
-                @click="toggle(index, 'bug', item.bug)"
-                class="salon_item un_select">除蚤
-              </button>
               <button
-                v-else
+                v-if="item.bug"
                 @click="toggle(index, 'bug', item.bug)"
                 class="salon_item is_selected">除蚤<a-icon type="check" />
               </button>
-
-              <!-- <a-button
-                type="primary"
-                v-model="item.bug"
-                v-if="!item.bug"
-                @click="toggle(index, 'bug', item.bug)"
-                class="salon_item"
-                :ghost="true"
-                >除蚤</a-button
-              >
-              <a-button
-                type="primary"
+              <button 
                 v-else
                 @click="toggle(index, 'bug', item.bug)"
-                class="salon_item"
-              >
-                除蚤
-                <a-icon type="check" />
-              </a-button> -->
+                class="salon_item un_select">除蚤
+              </button>
             </div>
             <div class="single_item_block">
-              <button 
-                v-if="!item.herbWash"
-                @click="toggle(index, 'herbWash', item.herbWash)"
-                class="salon_item un_select">藥浴
-              </button>
               <button
-                v-else
+                v-if="item.herbWash"
                 @click="toggle(index, 'herbWash', item.herbWash)"
                 class="salon_item is_selected">藥浴<a-icon type="check" />
               </button>
-
-              <!-- <a-button
-                type="primary"
-                v-model="item.herbWash"
-                v-if="!item.herbWash"
-                @click="toggle(index, 'herbWash', item.herbWash)"
-                class="salon_item"
-                :ghost="true"
-                >藥浴</a-button
-              >
-              <a-button
-                type="primary"
+              <button 
                 v-else
                 @click="toggle(index, 'herbWash', item.herbWash)"
-                class="salon_item"
-              >
-                藥浴
-                <a-icon type="check" />
-              </a-button> -->
+                class="salon_item un_select">藥浴
+              </button>
             </div>
             <div class="single_item_block">
-              <button 
-                v-if="!item.messyHair"
-                @click="toggle(index, 'messyHair', item.messyHair)"
-                class="salon_item un_select">打結
-              </button>
               <button
-                v-else
+                v-if="item.messyHair"
                 @click="toggle(index, 'messyHair', item.messyHair)"
                 class="salon_item is_selected">打結<a-icon type="check" />
               </button>
-
-              <!-- <a-button
-                type="primary"
-                v-model="item.messyHair"
-                v-if="!item.messyHair"
-                @click="toggle(index, 'messyHair', item.messyHair)"
-                class="salon_item"
-                :ghost="true"
-                >打結</a-button
-              >
-              <a-button
-                type="primary"
+              <button 
                 v-else
                 @click="toggle(index, 'messyHair', item.messyHair)"
-                class="salon_item"
-              >
-                打結
-                <a-icon type="check" />
-              </a-button> -->
+                class="salon_item un_select">打結
+              </button>
             </div>
           </div>
           <div :style="{padding: '4px 5px'}">
-            <a-input placeholder="備註" :style="{width: '100%', fontSize: '12px', outline: 'none'}" v-model="item.comment"/>
-            <a-input placeholder="$$" :style="{width: '30%', marginTop: '8px', fontSize: '12px'}" v-model="item.price"/>
+            <a-input placeholder="備註" :style="[commentInput]" v-model="item.comment"/>
+          </div>
+          <div :style="{padding: '0 5px', display: 'flex', justifyContent: 'space-between', height: '35px', alignItems: 'flex-end'}">
+            <!-- <a-input placeholder="$$" :style="[priceInput]" v-model="item.price"/> -->
+            <button v-if="item.status" class="dog_card_select is_selected" @click="toggle(index, 'status', item.status)">GO <a-icon type="smile" class="status_icon"/></button>
+            <button v-else class="dog_card_select un_select" @click="toggle(index, 'status', item.status)">NO <a-icon type="frown" class="status_icon"/></button>
           </div>
         </div>
       </a-card>
@@ -274,6 +147,21 @@ export default {
   data() {
     return {
       feed: "",
+      commentInput: {
+        width: '100%',
+        fontSize: '12px',
+        outline: 'none',
+        letterSpacing: '1px',
+      },
+      priceInput: {
+        width: '30%',
+        marginTop: '8px',
+        fontSize: '15px',
+        color: '#ff6473',
+        fontWeight: 800,
+        letterSpacing: '1px',
+        fontFamily: 'Courier New'
+      },
       dogBasicData: {
         display: 'flex',
         alignItems: 'center',
@@ -304,6 +192,7 @@ export default {
       allCards: [
         {
           name: "123",
+          feed: 'VIP',
           wash: false,
           cut: false,
           head: false,
@@ -313,10 +202,12 @@ export default {
           herbWash: false,
           messyHair: false,
           comment: '留頭尾',
-          price: 300
+          price: 300,
+          status: true
         },
         {
           name: "阿滑",
+          feed: 'Dash',
           wash: true,
           cut: true,
           head: true,
@@ -326,7 +217,8 @@ export default {
           herbWash: true,
           messyHair: true,
           comment: '腳臭',
-          price: 900
+          price: 900,
+          status: false
         }
       ]
     }
@@ -340,7 +232,7 @@ export default {
     },
     addNewCard() {
       this.allCards.push({
-        name: "88",
+        name: "",
         wash: false,
         cut: false,
         head: false,
@@ -376,9 +268,14 @@ $second-btn-color: #216583
     font-weight: 700
     font-family: '微軟正黑體'
     box-shadow: 1px 3px 5px rgba(0,0,0,.1)
+    opacity: .4
 
 .ant-card.card_block
     border-radius: 5px
+
+    &.select_border
+      transition: 1s
+      opacity: 1
 
 .ant-dropdown.ant-dropdown-placement-bottomLeft
     width: 80vw
@@ -432,10 +329,29 @@ $second-btn-color: #216583
 .add_btn
     text-align: right, 
     font-size: 20px
-    color: $second-btn-color
+    color: $second-btn-color  
 
-.comment
+.dog_card_select
+  width: 100%
+  border-radius: 5px
+  padding: 4px 8px
+  border: none
+  height: 32px
+  font-size: 12px
+  letter-spacing: 1px
+  outline: none
+  font-weight: 700
 
+  &.un_select
+      border: solid 1px $item-btn-bgc
+      color: $item-btn-bgc
 
+  &.is_selected
+      background-color: $second-btn-color
+      color: $item-btn-color
+
+  .status_icon
+    font-size: 16px
+    margin-left: 10px
 
 </style>

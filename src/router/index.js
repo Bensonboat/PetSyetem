@@ -2,7 +2,7 @@ import Vue from "vue";
 import VueRouter from "vue-router";
 import Home from "../views/Home.vue";
 import createName from '../views/CreateName'
-import list from '../views/salonList'
+import List from '../views/orderList'
 
 Vue.use(VueRouter);
 
@@ -27,9 +27,9 @@ const routes = [
     component: createName
   },
   {
-    path: '/list',
-    name: 'list',
-    component: list
+    path: '/List',
+    name: 'List',
+    component: List
   }
 ];
 

@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="home" :class="[this.showCard ? 'card_showing' : '']">
-      <div class="time_block">{{time}}</div>
+      <!-- <div class="time_block">{{time}}</div> -->
       <div>
         <div class="phone_search">
           <input type="text" v-model="phone" placeholder="請輸入電話" :class="[this.phone !== '' ? 'number_font' : '', this.showCard ? 'card_showing' : '']">
