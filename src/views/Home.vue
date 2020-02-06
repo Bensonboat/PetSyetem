@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="home" :class="[this.showCard ? 'card_showing' : '']">
-      <!-- <div class="time_block">{{time}}</div> -->
+      <div class="time_block">{{time}}</div>
       <div :style="{display: 'flex'}">
         <div v-if="showPhoneSearch" class="phone_search">
           <input type="text" v-model="phone" placeholder="請輸入電話" :class="[this.phone !== '' ? 'number_font' : '', this.showCard ? 'card_showing' : '']">
@@ -42,7 +42,6 @@
 <script>
 // @ is an alias to /src
 // import HelloWorld from "@/components/HelloWorld.vue";
-// import CreateName from './CreateName.vue'
 
 import PetCard from '../components/PetCard.vue'
 
@@ -50,7 +49,6 @@ export default {
   name: "home",
   components: {
     // HelloWorld
-    // CreateName
     PetCard
   },
   data() {
@@ -107,9 +105,9 @@ export default {
       this.phone = '';
       this.showCard = false
     },
-    createName(){
-      this.$router.push({ path: 'createName'})
-    },
+    // createName(){
+    //   this.$router.push({ path: 'createName'})
+    // },
     switchSearchMode(change){
       this.showPhoneSearch = !change
     },

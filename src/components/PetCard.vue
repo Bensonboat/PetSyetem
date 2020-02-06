@@ -240,7 +240,8 @@ export default {
         mouth: false,
         bug: false,
         herbWash: false,
-        messyHair: false
+        messyHair: false,
+        status: false
       });
     },
     showCommentBlock(index){
