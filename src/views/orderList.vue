@@ -136,6 +136,7 @@ export default {
   name: 'orderList',
   data() {
     return {
+      test: '',
       commentInput: {
         width: "100%",
         marginTop: "10px"
@@ -189,7 +190,8 @@ export default {
     //   this.orders[index].single_number = !status;
     // },
     handleChange(value) {
-      console.log(`selected ${value}`);
+      this.test = value
+      // console.log(`selected ${value}`);
     }
   }
 };

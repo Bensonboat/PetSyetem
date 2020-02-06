@@ -4,7 +4,7 @@
       <div class="time_block">{{time}}</div>
       <div :style="{display: 'flex'}">
         <div v-if="showPhoneSearch" class="phone_search">
-          <input type="text" v-model="phone" placeholder="請輸入電話" :class="[this.phone !== '' ? 'number_font' : '', this.showCard ? 'card_showing' : '']">
+          <input type="number" v-model="phone" placeholder="請輸入電話" :class="[this.phone !== '' ? 'number_font' : '', this.showCard ? 'card_showing' : '']">
           <div v-if="this.phone !== ''" @click="clearPhone" class="clear_phone phone_blcok_icon">x</div>
           <!-- <a-icon type="search" @click="phoneConfirm" class="phone_blcok_icon"/> -->
         </div>
@@ -161,7 +161,7 @@ export default {
       width: 100%
       letter-spacing: 2px
       height: 50px
-      font-size: 12px
+      font-size: 16px
       color: $fz-color
       font-weight: 700
       font-family: 'Courier New'
