@@ -17,6 +17,7 @@ export default{
 
 
 <style>
+
 #app {
   font-family: "Avenir", Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -25,7 +26,8 @@ export default{
   color: #2c3e50;
   height: 100vh;
   /* background-color: #eef9bf; */
-  background-color: #e8f1f5;
+  /* background-color: #e8f1f5; */
+  background-color: rgb(239, 204 , 210);
   overflow: scroll;
   padding: 0;
   margin: 0;

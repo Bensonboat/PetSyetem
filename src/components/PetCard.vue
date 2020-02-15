@@ -1,31 +1,34 @@
 <template>
   <div>
-    <div @click="addNewCard" class="add_btn">
-        <a-icon type="plus-circle" />
-    </div>
+    <slot name="editBtn"></slot>
+
+    <!-- <div @click="editFamilyData" class="edit_btn">
+        <a-icon type="edit"/>
+    </div> -->
     <div
       v-for="(item, index) in allCards"
       :key="index"
       :style="{marginBottom: '15px'}"
     >
-      <!-- <a-card size="small" :title="item.title" class="card_block"> -->
-      <a-card size="small" class="card_block" :class="[item.status ? 'select_border' : '']">
+      <a-card size="small" class="card_block">
         <div>
           <div :style="[dogBasicData]">
             <a-input
               placeholder="名稱"
               v-model="item.name"
               :style="[petNameBlock]"
+              v-if="editData"
             />
-            <div class="feed_select_block">
-              <div :style="[feedSelectBlcok]">犬種</div>
-              <a-select defaultValue="Amy" style="width: 120px" v-model="item.feed">
-                <a-select-option value="jack">Jack</a-select-option>
-                <a-select-option value="lucy">Lucy</a-select-option>
-                <a-select-option value="disabled" disabled
-                  >Disabled</a-select-option
+            <div v-else :style="[petNameBlock]">{{item.name}}</div>
+            <div class="breed_select_block">
+              <div :style="[breedSelectBlcok]">犬種</div>
+              <a-select defaultValue="" style="width: 120px" v-model="item.breed" :class="[!editData ? 'read_only' : '']">
+                <a-select-option
+                  v-for="(item, index) in breedData"
+                  :key="index"
+                  :value="item.value"
+                  >{{ item.name }}</a-select-option
                 >
-                <a-select-option value="Yiminghe">yiminghe</a-select-option>
               </a-select>
             </div>
           </div>
@@ -127,41 +130,71 @@
               </button>
             </div>
           </div>
-          <div :style="{padding: '4px 5px'}">
+          <!-- <div :style="{padding: '4px 5px'}">
             <a-icon v-if="!item.showComment" type="down-circle" @click="showCommentBlock(index)"/>
             <a-input v-else placeholder="備註" :style="[commentInput]" v-model="item.comment"/>
+          </div> -->
+          <div class="price_row">
+            <div>
+              <span class="price_txt">金額:</span>
+              <a-input  
+                type="number"
+                pattern="\d*"
+                placeholder="$$"
+                :style="[priceInput]"
+                v-model="item.price"
+              />
+            </div>
+            <button v-if="!editData" class="dog_card_select" :class="[item.status ? 'is_selected' : '']" @click="toggle(index, 'status', item.status)"><a-icon type="check" /></button>
+            <!-- <button v-else class="dog_card_select un_select" @click="toggle(index, 'status', item.status)">NO <a-icon type="frown" class="status_icon"/></button> -->
           </div>
-          <div :style="{padding: '0 5px', display: 'flex', justifyContent: 'space-between', height: '35px', alignItems: 'flex-end'}">
-            <!-- <a-input placeholder="$$" :style="[priceInput]" v-model="item.price"/> -->
-            <button v-if="item.status" class="dog_card_select is_selected" @click="toggle(index, 'status', item.status)">GO <a-icon type="smile" class="status_icon"/></button>
-            <button v-else class="dog_card_select un_select" @click="toggle(index, 'status', item.status)">NO <a-icon type="frown" class="status_icon"/></button>
+          <div v-if="editData" class="status_row">
+            <div class="status_operation">
+              <div>狀態</div>
+              <a-select defaultValue="normal" style="width: 120px" v-model="item.reject" class="reject_pet">
+                <a-select-option value="reject">拒接</a-select-option>
+                <a-select-option value="normal">正常</a-select-option>
+              </a-select>
+            </div>
+            <!-- <slot name="delete_pet"></slot> -->
+            <div @click="deletePet(index)">
+              <a-icon type="minus-circle" class="delete_icon"/>
+            </div>
           </div>
         </div>
       </a-card>
     </div>
+    <slot name="commentBlock"></slot>
   </div>
 </template>
 
 <script>
+import { db } from "../firebase";
+const fStore = db.firestore();
+
 export default {
   name: "petCard",
+  props: ['sameFamilyPetData', 'breedData', 'editData'],
   data() {
     return {
-      feed: "",
-      commentInput: {
-        width: '100%',
-        fontSize: '12px',
-        outline: 'none',
-        letterSpacing: '1px',
-      },
+      breed: "",
+      // commentInput: {
+      //   width: '100%',
+      //   fontSize: '12px',
+      //   outline: 'none',
+      //   letterSpacing: '1px',
+      // },
       priceInput: {
-        width: '30%',
+        width: '50%',
         marginTop: '8px',
         fontSize: '15px',
         color: '#ff6473',
         fontWeight: 800,
         letterSpacing: '1px',
-        fontFamily: 'Courier New'
+        fontFamily: 'Courier New',
+        border: 'none',
+        outline: 'none',
+        marginLeft: '5px'
       },
       dogBasicData: {
         display: 'flex',
@@ -178,11 +211,12 @@ export default {
         fontWeight: 700,
         color: '#4a707a'
       },
-      feedSelectBlcok: {
+      breedSelectBlcok: {
         marginRight: '10px',
         display: 'flex',
         alignItems: 'center',
-        fontSize: '12px'
+        fontSize: '12px',
+        color: '#4a707a'
       },
       itemBlock: {
         marginTop: '15px',
@@ -190,79 +224,90 @@ export default {
         flexWrap: 'wrap',
         justifyContent: 'flex-start'
       },
-      allCards: [
-        {
-          name: "123",
-          feed: 'VIP',
-          wash: false,
-          cut: false,
-          head: false,
-          feet: false,
-          mouth: false,
-          bug: false,
-          herbWash: false,
-          messyHair: false,
-          showComment: false,
-          comment: '留頭尾',
-          price: 300,
-          status: true
-        },
-        {
-          name: "阿滑",
-          feed: 'Dash',
-          wash: true,
-          cut: true,
-          head: true,
-          feet: true,
-          mouth: true,
-          bug: true,
-          herbWash: true,
-          messyHair: true,
-          showComment: false,
-          comment: '腳臭',
-          price: 900,
-          status: false
-        }
-      ]
+      allCards: this.sameFamilyPetData
+      // allCards:
+      // [
+      //   {
+      //     name: "123",
+      //     breed: 'VIP',
+      //     status: true,
+      //     items: [
+      //       {wash: false},
+      //       {cut: false},
+      //       {head: false},
+      //       {feet: false},
+      //       {mouth: false},
+      //       {bug: false},
+      //       {herbWash: false},
+      //       {messyHair: false},
+      //     ],
+      //     // wash: false,
+      //     // cut: false,
+      //     // head: false,
+      //     // feet: false,
+      //     // mouth: false,
+      //     // bug: false,
+      //     // herbWash: false,
+      //     // messyHair: false,
+      //     showComment: false,
+      //     price: 300,
+      //   },
+      //   {
+      //     name: "阿滑",
+      //     breed: 'Dash',
+      //     wash: true,
+      //     cut: true,
+      //     head: true,
+      //     feet: true,
+      //     mouth: true,
+      //     bug: true,
+      //     herbWash: true,
+      //     messyHair: true,
+      //     showComment: false,
+      //     comment: '腳臭',
+      //     price: 900,
+      //     status: false
+      //   }
+      // ]
     }
   },
   methods: {
     toggle(index, name, v) {
       this.allCards[index][name] = !v;
     },
-    addNewCard() {
-      this.allCards.push({
-        name: "",
-        wash: false,
-        cut: false,
-        head: false,
-        feet: false,
-        mouth: false,
-        bug: false,
-        herbWash: false,
-        messyHair: false,
-        status: false
-      });
-    },
-    showCommentBlock(index){
-      this.allCards[index]['showComment'] = true
+    deletePet(index){
+      this.$emit('deletePet', index)
     }
   }
 };
 </script>
 
 <style lang="sass">
+@import '../styles/basics/_common_var.scss'
+
+//!!FF2C55
+
 $fz-color: rgba(0,0,0,.4)
 // $item-btn-bgc: #283c63
 // $item-btn-bgc: #008891
 // $item-btn-bgc: #65c0ba
 // $item-btn-color: #455d7a
 
-$main-btn-bgc: #4a707a
+// $main-color: #4a707a  // last one 灰藍
+// $main-color: #064789  // 深藍
+// $main-color: #EF2D56 // 粉色
+// $main-color: #F0386B
+// $main-color: #E34A6F
+// $main-color: #FF4D80
+// $main-color: rgb(219, 71, 80)
+
 
 // $item-btn-color: #fefaec
 // $second-btn-color: #216583
-$second-color: #7697a0
+// $second-color: #7697a0
+// $second-color: #FF2C55
+
+// $third-color: #4a707a
 
 
 .card_block
@@ -275,15 +320,10 @@ $second-color: #7697a0
     color: $fz-color
     font-weight: 700
     font-family: '微軟正黑體'
-    box-shadow: 1px 3px 5px rgba(0,0,0,.1)
-    opacity: .4
+    box-shadow: -5px 5px 12px rgba(0,0,0,.1)
 
 .ant-card.card_block
     border-radius: 5px
-
-    &.select_border
-      transition: 1s
-      opacity: 1
 
 .ant-dropdown.ant-dropdown-placement-bottomLeft
     width: 80vw
@@ -294,9 +334,9 @@ $second-color: #7697a0
     padding: 4px 5px
 
 .ant-btn.ant-btn-background-ghost.salon_item
-    background-color: $main-btn-bgc
-    border-color: $main-btn-bgc
-    color: #eee
+    background-color: $main-color
+    border-color: $main-color
+    color: $text-color-light
     width: 70px
     font-size: 12px
 
@@ -323,25 +363,25 @@ $second-color: #7697a0
 
 .un_select
     background-color: transparent
-    border-color: $main-btn-bgc
-    color: $main-btn-bgc
+    border-color: $main-color
+    color: $main-color
 
 .is_selected
-    background-color: $main-btn-bgc
-    border-color: $main-btn-bgc
-    color: #eee
+    background-color: $main-color
+    border-color: $main-color
+    color: $text-color-light
 
-.feed_select_block
+.breed_select_block
     display: flex
     align-items: center   
 
-.add_btn
+.edit_btn
     text-align: right, 
     font-size: 20px
-    color: $second-color
+    color: $main-color
 
 .dog_card_select
-  width: 100%
+  width: 100px
   border-radius: 5px
   padding: 4px 8px
   border: none
@@ -350,16 +390,59 @@ $second-color: #7697a0
   letter-spacing: 1px
   outline: none
   font-weight: 700
+  background-color: transparent
+  border: solid 1px $main-color
+  // border-color: $main-color
+  color: $main-color
+
+
+  
 
   &.un_select
-      border: solid 1px $main-btn-bgc
-      color: $main-btn-bgc
+      border: solid 1px $main-color
+      color: $main-color
 
   &.is_selected
-      background-color: $main-btn-bgc
-      color: #eee
+      background-color: $main-color
+      color: $text-color-light
   .status_icon
     font-size: 16px
     margin-left: 10px
 
+.read_only
+  pointer-events: none
+  opacity: .5
+
+.price_txt
+  color: $text-color-blue
+
+.price_row
+  padding: 0 5px
+  display: flex
+  justify-content: space-between
+  height: 35px
+  align-items: flex-end
+  margin-top: 15px
+
+.status_row  
+  display: flex
+  justify-content: space-between
+  align-items: center
+  padding: 0 5px
+  margin-top: 10px
+
+  .delete_icon
+    align-self: center
+    margin-left: 20px
+    font-size: 22px
+    color: $danger-color
+
+.status_operation  
+  display: flex
+  justify-content: flex-end
+  align-items: center
+  color: $text-color-blue
+  
+  .reject_pet 
+    margin-left: 10px
 </style>

@@ -2,20 +2,15 @@
   <div class="order_list">
     <div v-for="(item, index) in orders" :key="index" class="each_order_card">
       <!-- <a-card size="small" :title="item.phone + item.status" style="width: 100%; padding: 6px 12px 12px 12px"> -->
-      <a-card size="small" style="width: 100%; padding: 6px 12px 12px 12px; border-radius: 6px; border: none">
+      <a-card size="small" style="width: 100%; padding: 6px 12px 12px 12px; border-radius: 6px; border: none; border-top: solid 20px #ec5659">
         <div class="status_block">
           <!-- <div v-if="item.single_number">{{ item.phone[0] }}</div> -->
           <a-select
-              :defaultValue="item.phone[0]"
-              style="width: 150px"
+              :defaultValue="item.phone[0].phone"
+              style="width: 130px"
               @change="handleChange"
             >
-              <a-select-option v-for="(phone, p_index) in item.phone" :key="p_index" :value="phone">{{phone}}</a-select-option>
-              <!-- <a-select-option value="lucy">Lucy</a-select-option>
-              <a-select-option value="disabled" disabled
-                >Disabled</a-select-option
-              >
-              <a-select-option value="Yiminghe">yiminghe</a-select-option> -->
+              <a-select-option v-for="(phone, p_index) in item.phone" :key="p_index" :value="phone.phone">{{phone.phone}}</a-select-option>
           </a-select>
           <!-- <div><a-icon type="down-circle" /></div> -->
 
@@ -26,16 +21,19 @@
             <div v-if="item.single_number"><a-icon type="down-circle" /></div>
             <div v-else><a-icon type="up-circle" /></div>
           </div> -->
-          <a-select
-            :defaultValue="item.status"
-            style="width: 120px"
-            @change="handleChange"
-            v-model="orders[index].status"
-          >
-            <a-select-option value="doing">未完成</a-select-option>
-            <a-select-option value="done">已完成</a-select-option>
-            <a-select-option value="no_answer">打電話未接</a-select-option>
-          </a-select>
+          <div class="order_edit_block">
+            <a-select
+              :defaultValue="item.status"
+              style="width: 90px"
+              @change="handleChange"
+              v-model="orders[index].status"
+            >
+              <a-select-option value="doing">未完成</a-select-option>
+              <a-select-option value="done">已完成</a-select-option>
+              <a-select-option value="no_answer">未接</a-select-option>
+            </a-select>
+            <div class="edit_block"><a-icon type="edit" /></div>
+          </div>
           <!-- <div>{{item.status}}</div> -->
         </div>
         <div
@@ -132,6 +130,9 @@
 </template>
 
 <script>
+import { db } from "../firebase";
+const fStore = db.firestore();
+
 export default {
   name: 'orderList',
   data() {
@@ -185,6 +186,9 @@ export default {
       ]
     };
   },
+  mounted(){
+    this.getAllOrders()
+  },
   methods: {
     // showMultipleNumber(index, status) {
     //   this.orders[index].single_number = !status;
@@ -192,8 +196,30 @@ export default {
     handleChange(value) {
       this.test = value
       // console.log(`selected ${value}`);
+    },
+    getAllOrders(){
+      fStore.collection('order').get().then(data => {
+        data.forEach(doc => {
+          let current_data = {};
+          current_data['data'] = [];
+          current_data['data'].push(doc.data());
+          current_data['phone'] = doc.data().phone;
+          current_data['status'] = '未完成'
+          this.orders.push(current_data)
+        })
+      })
     }
-  }
+  },
+  // computed:{
+  //   getOrder(){
+  //     return this.$store.state.orderList.orderList
+  //   }
+  // },
+  // watch:{
+  //   getOrder(data){
+  //     this.orders.push(data)
+  //   }
+  // }
 };
 </script>
 
@@ -201,9 +227,14 @@ export default {
 $main-color: #4a707a
 $pet-name-color: rgba(0,0,0,.7)
 
+//test
+// $main-color: #064789
+// 064789
+$main-color: #ec5659
+
 .order_list
   width: 90vw
-  margin: 15px auto
+  margin: 20px auto 30px auto
 
 .items_block
   display: flex
@@ -219,6 +250,8 @@ $pet-name-color: rgba(0,0,0,.7)
       height: 25px
       font-size: 12px
       padding: 0
+      background-color: $main-color
+      border: none
 
 
 .per_dog_status
@@ -252,4 +285,16 @@ $pet-name-color: rgba(0,0,0,.7)
   border-bottom: solid 1px rgba(0,0,0,.1)
   padding-bottom: 8px
   align-items: center
+
+.order_edit_block
+  display: flex
+  align-items: center
+  width: 100%
+  justify-content: space-between
+  margin-left: 20px
+
+.edit_block
+  font-size: 16px
+  color: $main-color
+
 </style>

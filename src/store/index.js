@@ -2,13 +2,15 @@ import Vue from "vue";
 import Vuex from "vuex";
 
 //import modules
-import test from './modules/test'
+import orderList from './modules/orderList'
+import searchData from './modules/searchData'
 
 Vue.use(Vuex);
 
 export default new Vuex.Store({
   modules: {
-    test
+    orderList,
+    searchData,
   }
   // state: {},
   // mutations: {},

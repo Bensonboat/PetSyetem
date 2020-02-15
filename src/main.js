@@ -5,6 +5,10 @@ import store from "./store";
 import Antd from 'ant-design-vue'
 import "ant-design-vue/dist/antd.css";
 
+// firebase 
+import { firestorePlugin } from 'vuefire'
+Vue.use(firestorePlugin)
+
 
 Vue.config.productionTip = false;
 

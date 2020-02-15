@@ -1,7 +1,8 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
 import Home from "../views/Home.vue";
-import List from '../views/orderList'
+import List from '../views/orderList';
+import EditFamilyData from '../views/EditFamilyData'
 
 Vue.use(VueRouter);
 
@@ -15,6 +16,11 @@ const routes = [
     path: '/List',
     name: 'List',
     component: List
+  },
+  {
+    path: '/EditFamilyData',
+    name: 'EditFamilyData',
+    component: EditFamilyData
   }
 ];
 

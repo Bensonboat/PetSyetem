@@ -16,10 +16,16 @@ export default {
 </script>
 
 <style lang="sass" scoped>
-$second_color: #7697a0
+// $main-color: #064789  深藍
+// $main-color: #EF2D56 // 粉色
+// $main-color: #F0386B
+// $main-color: #FF2C55
+// $main-color: #FF4D80
+$main-color: rgb(236, 86, 89)
+
 
 .nav_tab
-  background-color: $second_color
+  background-color: $main-color
   padding: 15px 12px
   display: flex
   justify-content: space-around
