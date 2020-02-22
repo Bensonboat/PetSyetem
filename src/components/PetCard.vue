@@ -271,6 +271,14 @@ export default {
       // ]
     }
   },
+  watch: {
+    sameFamilyPetData:{
+      immediate: true, 
+      handler (val, oldVal) {
+        this.allCards = val
+      }
+    }
+  },
   methods: {
     toggle(index, name, v) {
       this.allCards[index][name] = !v;

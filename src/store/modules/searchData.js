@@ -20,7 +20,7 @@ const mutations = {
     },
     setPhone(state, data){
         state.phone = data
-    }
+    },
 }
 
 export default {

@@ -1,55 +1,61 @@
 <template>
     <div class="edit_family_data" ref="edit_family_data">
-        <div class="previous_page" @click="backToSearchPage">
-            <a-icon type="swap-left" />
+        <div v-if="loading" :style="[loadingBlock]">
+            <a-icon type="loading"/>
         </div>
-        <div class="update_member_block">
-            <div class="header">客人資料</div>
-            <div class="phone_data">
-                <div class="phone_data_header">
-                    <div class="name">暱稱</div>
-                    <div class="phone">電話</div>
-                    <div class="plus_icon" @click="addNewPhone">
-                        <a-icon type="plus" />
-                    </div>
-                </div>
-                <div v-if="phonesData.length === 0" class="no_data">尚無資料</div>
-                <div v-else class="phone_data_info" v-for="(item, index) in phonesData" :key="item.id"> 
-                    <div class="name">
-                        <input type="text" :placeholder="'暱稱'" v-model="phonesData[index].name">
-                    </div>
-                    <div class="phone">
-                        <input type="text" :placeholder="'電話'" v-model="phonesData[index].phone">
-                    </div>
-                    <div class="delete_icon" @click="deletePhone(index)">
-                        <a-icon type="minus-circle" />
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="update_pet_block">
-            <div class="header">
-                <div>寵物資料</div>
-                <div class="plus_icon" @click="addNewPet">
-                    <a-icon type="plus-circle"/>
-                </div>
-            </div>
-            <div v-if="petsData.length === 0" class="no_data">尚無資料</div>
-            <div v-else>
-                <pet-card :sameFamilyPetData="petsData" :editData="true" :breedData="breedsList" @deletePet="deletePet">
-                    <!-- <div slot="delete_pet">
-                        <div @click="deletePet(index)">
-                            <a-icon type="minus-circle" class="delete_icon"/>
+        <div v-else>
+            <slot name="backToPetSearch"></slot>
+            <!-- <div class="previous_page" @click="backToSearchPage">
+                <a-icon type="swap-left" />
+            </div> -->
+            <div class="update_member_block">
+                <div class="header">客人資料</div>
+                <div class="phone_data">
+                    <div class="phone_data_header">
+                        <div class="name">暱稱</div>
+                        <div class="phone">電話</div>
+                        <div class="plus_icon" @click="addNewPhone">
+                            <a-icon type="plus" />
                         </div>
-                    </div> -->
-                </pet-card>
+                    </div>
+                    <div v-if="phonesData.length === 0" class="no_data">尚無資料</div>
+                    <div v-else class="phone_data_info" v-for="(item, index) in phonesData" :key="item.id"> 
+                        <div class="name">
+                            <input type="text" :placeholder="'暱稱'" v-model="phonesData[index].name">
+                        </div>
+                        <div class="phone">
+                            <input type="text" :placeholder="'電話'" v-model="phonesData[index].phone">
+                        </div>
+                        <div class="delete_icon" @click="deletePhone(index)">
+                            <a-icon type="minus-circle" />
+                        </div>
+                    </div>
+                </div>
             </div>
+            <div class="update_pet_block">
+                <div class="header">
+                    <div>寵物資料</div>
+                    <div class="plus_icon" @click="addNewPet">
+                        <a-icon type="plus-circle"/>
+                    </div>
+                </div>
+                <div v-if="petsData.length === 0" class="no_data">尚無資料</div>
+                <div v-else>
+                    <pet-card :sameFamilyPetData="petsData" :editData="true" :breedData="breedsList" @deletePet="deletePet">
+                        <!-- <div slot="delete_pet">
+                            <div @click="deletePet(index)">
+                                <a-icon type="minus-circle" class="delete_icon"/>
+                            </div>
+                        </div> -->
+                    </pet-card>
+                </div>
+            </div>
+            <div>
+                <div class="header">備註</div>
+                <input type="text" placeholder="請輸入備註" class="comment" v-model="comment">
+            </div>
+            <button class="search_btn update_confirm_btn" @click="updateConfirm">確認更新資料</button>
         </div>
-        <div>
-            <div class="header">備註</div>
-            <input type="text" placeholder="請輸入備註" class="comment" v-model="comment">
-        </div>
-        <button class="search_btn update_confirm_btn" @click="updateConfirm">確認更新資料</button>
     </div>
 </template>
 
@@ -63,34 +69,37 @@ export default {
     components: {
         petCard
     },
+    props: ['petSearchFamilyID'],
     data(){
         return{
+            loadingBlock: {
+                position: "absolute",
+                top: "50%",
+                left: "50%",
+                transform: "translate(-50%, -50%)",
+                fontSize: "70px",
+                color: "#ec5659"
+            },
+            loading: false,
             familyID: '',
             comment: '',
             breedsList: [],
             phonesData: [],
             petsData: [],
             deletePhonesData: [],
-            deletePetsData: []
+            deletePetsData: [],
         }
     },
     mounted(){
         this.getBreedsData();
         this.getFamilyID().then(() => {
             if(this.familyID === ''){
-                alert('系統錯誤，請重新操作')        
+                alert('系統錯誤，請重新操作');
+                this.$router.push({path: '/'})       
             }
 
             this.getEditPhonesData();
             this.getEditPetsData();
-
-            fStore
-                .collection('family')
-                .doc(this.familyID)
-                .get()
-                .then(doc => {
-                    this.comment = doc.data().comment
-                })
         });
 
         // 首次新增時
@@ -101,9 +110,32 @@ export default {
                 name: '',
                 phone: this.$store.state.searchData.phone
             })
+        }  else {
+            fStore
+                .collection('family')
+                .doc(this.familyID)
+                .get()
+                .then(doc => {
+                    this.comment = doc.data().comment
+                })
         }
-
-        
+    },
+    computed: {
+        getPetSearchFamilyID(){
+            return this.$store.state.searchData.family_id;
+        }
+    },
+    watch: {
+        getPetSearchFamilyID(id){
+            this.phonesData = [];
+            this.petsData = [];
+            this.familyID = id;
+            this.getEditPhonesData();
+            this.getEditPetsData();
+        }
+    },
+    destroyed(){
+        this.$store.commit('searchData/saveCurrentFamilyID', '')
     },
     methods: {
         addNewPhone(){
@@ -226,138 +258,118 @@ export default {
             }
 
             if(new_client === true){  // 新客人
-            //     // 存新戶電話
-            //     this.phonesData.map(item => {
-            //         let member_phone = {
-            //             family_id: this.familyID,
-            //             phone: item
-            //         }
-            //         fStore
-            //             .collection("member")
-            //             .doc()
-            //             .set(member_phone);
-            //     });
-
-            //     // 存新戶寵物
-            //     this.petsData.map(item => {
-            //         fStore
-            //             .collection("pet")
-            //             .doc()
-            //             .set(item);
-            //     });
-
                 // 建立新 family ID 與備註
                 fStore
                     .collection("family")
                     .doc(this.familyID)
                     .set({comment: this.comment});
-
-                alert('資料儲存成功')
             } 
-            // else {
 
-                // 比對電話更新並儲存
-                this.phonesData.map(item => {
-                    let old_data = false;
+            // 比對電話更新並儲存
+            this.phonesData.map(item => {
+                let old_data = false;
 
-                    fStore
-                        .collection("member")
-                        .where("family_id", "==", this.familyID)
-                        .get()
-                        .then(data => {
-                            data.forEach(doc => {
-                                let data = {
-                                    phone: item
-                                 }
-
-                                if(doc.data().phone.id === item.id){
-                                    // 有資料就更新
-                                    fStore.collection('member').doc(doc.id).update(data);
-                                    old_data = true
-                                }                           
-                            });
-                        })
-                        .then(() => {
-                            // 資料庫還沒有資料 所以新增
-                            if(old_data === false){
-                                let data = {
-                                    family_id: this.familyID,
-                                    phone: item
-                                }
-
-                                fStore
-                                    .collection("member")
-                                    .doc()
-                                    .set(data);
-                            }
-                        })
-                });
-
-                this.petsData.map(item => {
-                    let old_data = false;
-
-                    // 比對寵物資料更新並儲存
-                    fStore
-                        .collection("pet")
-                        .get()
-                        .then(data => {
-                            data.forEach(doc => {
-                                if(doc.data().family_id === this.familyID && doc.data().id === item.id){
-                                    old_data = true
-                                    fStore.collection('pet').doc(doc.id).update(item)
-                                    alert('x')
-                                }
-                            });
-                        })
-                        .then(() => {
-                            // 資料庫沒資料, 新增一筆
-                            if(old_data === false){
-                                fStore
-                                    .collection("pet")
-                                    .doc()
-                                    .set(item);
-                            }
-                        })
-                })
-
-                this.deletePhonesData.map(item => {
-                    fStore
-                        .collection('member')
-                        .where("family_id", "==", this.familyID)
-                        .get()
-                        .then(data => {
-                            data.forEach(doc => {
-                                if(doc.data().phone.id === item.id){
-                                    fStore.collection('member').doc(doc.id).delete()
-                                }
-                            })
-                        })
-                });
-
-                this.deletePetsData.map(item => {
-                    fStore
-                        .collection('pet')
-                        .where("family_id", "==", this.familyID)
-                        .where("id", "==", item.id)
-                        .get()
-                        .then(data => {
-                            data.forEach(doc => {
-                                fStore.collection('pet').doc(doc.id).delete()
-                            })
-                        })
-
-                });
-
-                // 更新備註
                 fStore
-                    .collection("family")
-                    .doc(this.familyID)
-                    .update({comment: this.comment})
+                    .collection("member")
+                    .where("family_id", "==", this.familyID)
+                    .get()
+                    .then(data => {
+                        data.forEach(doc => {
+                            let data = {
+                                phone: item
+                                }
 
-                alert('資料儲存成功')
-            }
+                            if(doc.data().phone.id === item.id){
+                                // 有資料就更新
+                                fStore.collection('member').doc(doc.id).update(data);
+                                old_data = true
+                            }                           
+                        });
+                    })
+                    .then(() => {
+                        // 資料庫還沒有資料 所以新增
+                        if(old_data === false){
+                            let data = {
+                                family_id: this.familyID,
+                                phone: item
+                            }
 
-        // }
+                            fStore
+                                .collection("member")
+                                .doc()
+                                .set(data);
+                        }
+                    })
+            });
+
+            this.petsData.map(item => {
+                let old_data = false;
+
+                // 比對寵物資料更新並儲存
+                fStore
+                    .collection("pet")
+                    .get()
+                    .then(data => {
+                        data.forEach(doc => {
+                            if(doc.data().family_id === this.familyID && doc.data().id === item.id){
+                                old_data = true
+                                fStore.collection('pet').doc(doc.id).update(item)
+                            }
+                        });
+                    })
+                    .then(() => {
+                        // 資料庫沒資料, 新增一筆
+                        if(old_data === false){
+                            fStore
+                                .collection("pet")
+                                .doc()
+                                .set(item);
+                        }
+                    })
+            })
+
+            this.deletePhonesData.map(item => {
+                fStore
+                    .collection('member')
+                    .where("family_id", "==", this.familyID)
+                    .get()
+                    .then(data => {
+                        data.forEach(doc => {
+                            if(doc.data().phone.id === item.id){
+                                fStore.collection('member').doc(doc.id).delete()
+                            }
+                        })
+                    })
+            });
+
+            this.deletePetsData.map(item => {
+                fStore
+                    .collection('pet')
+                    .where("family_id", "==", this.familyID)
+                    .where("id", "==", item.id)
+                    .get()
+                    .then(data => {
+                        data.forEach(doc => {
+                            fStore.collection('pet').doc(doc.id).delete()
+                        })
+                    })
+
+            });
+
+            // 更新備註
+            fStore
+                .collection("family")
+                .doc(this.familyID)
+                .update({comment: this.comment})
+
+            this.loading = true;
+
+            setTimeout(() => {
+                alert('資料儲存成功');
+                // location.reload()
+                this.$emit('clearFamilyID')
+            }, 500)
+        },
     },
 }
 
@@ -456,12 +468,6 @@ export default {
 .no_data
     background-color: $card-color
     padding: 8px 12px
-
-.previous_page 
-    text-align: left
-    color: $danger-color
-    font-size: 35px
-    margin-top: 10px
 
 .comment
     padding: 8px 12px
