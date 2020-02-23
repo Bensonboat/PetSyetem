@@ -24,7 +24,12 @@
                             <input type="text" :placeholder="'暱稱'" v-model="phonesData[index].name">
                         </div>
                         <div class="phone">
-                            <input type="text" :placeholder="'電話'" v-model="phonesData[index].phone">
+                            <input               
+                                type="number"
+                                pattern="\d*"
+                                :placeholder="'電話'" 
+                                v-model="phonesData[index].phone
+                            ">
                         </div>
                         <div class="delete_icon" @click="deletePhone(index)">
                             <a-icon type="minus-circle" />
@@ -41,13 +46,7 @@
                 </div>
                 <div v-if="petsData.length === 0" class="no_data">尚無資料</div>
                 <div v-else>
-                    <pet-card :sameFamilyPetData="petsData" :editData="true" :breedData="breedsList" @deletePet="deletePet">
-                        <!-- <div slot="delete_pet">
-                            <div @click="deletePet(index)">
-                                <a-icon type="minus-circle" class="delete_icon"/>
-                            </div>
-                        </div> -->
-                    </pet-card>
+                    <pet-card :sameFamilyPetData="petsData" :editData="true" :breedData="breedsList" @deletePet="deletePet"/>
                 </div>
             </div>
             <div>
@@ -135,7 +134,8 @@ export default {
         }
     },
     destroyed(){
-        this.$store.commit('searchData/saveCurrentFamilyID', '')
+        this.$store.commit('searchData/saveCurrentFamilyID', '');
+        this.$store.commit('searchData/checkClientStatus', false);
     },
     methods: {
         addNewPhone(){
@@ -175,7 +175,7 @@ export default {
                 bug: false,
                 herbWash: false,
                 messyHair: false,
-                showComment: false,
+                // showComment: false,
                 price: '',
                 status: false,
                 reject: 'normal'
@@ -366,7 +366,6 @@ export default {
 
             setTimeout(() => {
                 alert('資料儲存成功');
-                // location.reload()
                 this.$emit('clearFamilyID')
             }, 500)
         },
@@ -386,14 +385,15 @@ export default {
     color: $text-color-blue
     font-weight: 600
 
-
     input
-        // border: none
         outline: none
         border: solid 1px rgba(0,0,0,.1)
         border-radius: 5px
-        padding: 4px 8px
+        padding: 6px 12px
         width: 100%
+        letter-spacing: 1px
+        color: rgba(0,0,0,.5)
+        font-weight: 500
 
 .update_member_block
     background-color: $card-color
@@ -420,6 +420,7 @@ export default {
 
 .phone 
     width: 60%
+    font-size: 16px
 
 .plus_icon
     width: 10%

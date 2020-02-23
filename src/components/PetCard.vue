@@ -178,16 +178,10 @@ export default {
   data() {
     return {
       breed: "",
-      // commentInput: {
-      //   width: '100%',
-      //   fontSize: '12px',
-      //   outline: 'none',
-      //   letterSpacing: '1px',
-      // },
       priceInput: {
         width: '50%',
         marginTop: '8px',
-        fontSize: '15px',
+        fontSize: '16px',
         color: '#ff6473',
         fontWeight: 800,
         letterSpacing: '1px',
@@ -225,50 +219,6 @@ export default {
         justifyContent: 'flex-start'
       },
       allCards: this.sameFamilyPetData
-      // allCards:
-      // [
-      //   {
-      //     name: "123",
-      //     breed: 'VIP',
-      //     status: true,
-      //     items: [
-      //       {wash: false},
-      //       {cut: false},
-      //       {head: false},
-      //       {feet: false},
-      //       {mouth: false},
-      //       {bug: false},
-      //       {herbWash: false},
-      //       {messyHair: false},
-      //     ],
-      //     // wash: false,
-      //     // cut: false,
-      //     // head: false,
-      //     // feet: false,
-      //     // mouth: false,
-      //     // bug: false,
-      //     // herbWash: false,
-      //     // messyHair: false,
-      //     showComment: false,
-      //     price: 300,
-      //   },
-      //   {
-      //     name: "阿滑",
-      //     breed: 'Dash',
-      //     wash: true,
-      //     cut: true,
-      //     head: true,
-      //     feet: true,
-      //     mouth: true,
-      //     bug: true,
-      //     herbWash: true,
-      //     messyHair: true,
-      //     showComment: false,
-      //     comment: '腳臭',
-      //     price: 900,
-      //     status: false
-      //   }
-      // ]
     }
   },
   watch: {

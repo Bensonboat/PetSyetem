@@ -29,6 +29,7 @@ $main-color: rgb(236, 86, 89)
   padding: 15px 12px
   display: flex
   justify-content: space-around
+  height: 50px
 
 #nav .tab
   text-decoration: none

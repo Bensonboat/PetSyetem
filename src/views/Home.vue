@@ -1,11 +1,7 @@
 <template>
   <div>
     <div
-      v-if="
-        phoneData.length === 0 &&
-          petData.length === 0 &&
-          familyData.length === 0
-      "
+      v-if="searching"
       :style="[loadingBlock]"
     >
       <a-icon type="loading" />
@@ -47,7 +43,6 @@
               <div class="breed_select_block">
                 <div :style="[breedSelectBlcok]">犬種</div>
                 <a-select
-                  defaultValue=""
                   style="width: 75px"
                   v-model="nameData.breed"
                 >
@@ -152,6 +147,11 @@ import editFamilyData from './EditFamilyData'
 import { db } from "../firebase";
 const fStore = db.firestore();
 
+const familyRef = fStore.collection('family')
+const petRef = fStore.collection('pet')
+const memberRef = fStore.collection('member')
+// const familyRef = fStore.collection('family')
+
 export default {
   name: "Home",
   components: {
@@ -161,10 +161,11 @@ export default {
   },
   data() {
     return {
+      searching: false,
       phone: "",
       comment: "",
       nameData: {
-        name: "小",
+        name: "",
         breed: ""
       },
       showPhoneSearch: true, // 是否用電話搜尋
@@ -211,7 +212,8 @@ export default {
         letterSpacing: "1px",
         border: "none",
         color: 'rgb(74, 112, 122)',
-        fontWeight: 600
+        fontWeight: 600,
+        padding: '12px 20px'
       },
       loadingBlock: {
         position: "absolute",
@@ -221,10 +223,10 @@ export default {
         fontSize: "70px",
         color: "#ec5659"
       },
-      phoneData: [],
-      familyData: [],
+      // phoneData: [],
+      // familyData: [],
       breedData: [],
-      petData: [],
+      // petData: [],
       sameFamilyPetData: [],
       noData: '', // 無相關資料
       editData: false,
@@ -235,7 +237,7 @@ export default {
     };
   },
   mounted() {
-    this.getAllData();
+    this.getBreedData()
     this.$store.commit('searchData/checkClientStatus', false) // 確認是不是第一次來的客人
   },
   watch: {
@@ -257,63 +259,54 @@ export default {
         alert('請輸入電話');
         return
       }
+      this.searching = true;
 
-      this.sameFamilyPetData = []; // for 清空
-
-      this.checkPhoneFamilyID().then(status => {
-        let family_id = status;
-
+      this.checkPhoneFamilyID().then(id => {
         // family ID 不存在
-        if (status === "noData") {
+        if (id === "noData") {
           this.noData = true;
         } else {
-          this.familyID = family_id;
-
-          this.getCertainPetData()   // 該電話號碼有資料 比對 family ID 拉出寵物資料
-
-          // 比對 ID 獲取 family 備註
-          fStore
-            .collection("family")
-            .get()
-            .then(data => {
-              data.forEach(doc => {
-                if (doc.id === family_id) {
-                  this.$store.commit('searchData/saveCurrentFamilyID', doc.id) // 儲存當前 family ID
-                  this.comment = doc.data().comment;
-                }
-              });
-            });
-
+          this.familyID = id; // 組件內儲存 id
+          this.getCertainPetData()   // 比對 family ID 拉出寵物資料
+          this.getCertainFamilyComment() // 比對 family ID 拉出備註   
           this.showCard = true;
         }
+        this.searching = false;
       });
     },
     petNameSearch() {
       this.petSearchData = [];
 
-      if(this.nameData.name === '' && this.nameData.breed === ''){
-        alert('請輸入搜尋資料');
+      if(this.nameData.name === ''){
+        alert('名稱為必填資料');
         return
       }
+
+      this.searching = true;
+
       this.checkPetFamilyID().then(() => {
         if(this.petSearchData.length !== 0){
-          this.petSearchData.map(item => {
-            this.petData.map(pet => {
-              if(item.family_id === pet.family_id && item.name !== pet.name){
-                
-                // 存入同個家庭其他狗狗的名字和犬種
-                let other_pet = {
-                  name: pet.name,
-                  breed: pet.breed
-                }
-                item.data.push(other_pet)
-              }
+          this.petSearchData.map(item => {    
+            petRef
+              .onSnapshot(querySnapshot => {
+                querySnapshot.forEach(doc => {
+                  if(item.family_id === doc.data().family_id && item.name !== doc.data().name){
+                    // 存入同個家庭其他狗狗的名字和犬種
+                    let other_pet = {
+                      name: doc.data().name,
+                      breed: doc.data().breed
+                    }
+                    item.data.push(other_pet)
+                  }
+                })
+              })
             })
-          })
           this.showCard = true;
         } else {
           this.noData = true;
         }
+
+        this.searching = false;
       });
     },
     clearPhone() {
@@ -324,66 +317,20 @@ export default {
       this.showPhoneSearch = !change;
       this.noData = false;
       this.showCard = false;
-    },
-    getPhoneData() {
-      fStore
-        .collection("member")
-        .get()
-        .then(data => {
-          data.forEach(doc => {
-            this.phoneData.push(doc.data());
-          });
-        });
-    },
-    getFamilyData() {
-      fStore
-        .collection("family")
-        .get()
-        .then(data => {
-          data.forEach(doc => {
-            let family_data = {
-              comment: doc.data(),
-              id: doc.id
-            };
-            this.familyData.push(family_data);
-          });
-        });
-    },
-    getBreedsData() {
-      fStore
-        .collection("breed")
-        .get()
-        .then(data => {
-          data.forEach(doc => {
-            this.breedData = doc.data().all_breeds;
-          });
-        });
-    },
-    getPetData() {
-      fStore
-        .collection('pet')
-        .onSnapshot(querySnapshot => {
-          querySnapshot.forEach(doc => {
-            this.petData.push(doc.data());
-          });
-        });
-      // fStore
-      //   .collection("pet")
-      //   .get()
-      //   .then(data => {
-      //     data.forEach(doc => {
-      //       this.petData.push(doc.data());
-      //     });
-      //   });
+      this.phone = '';
+      this.nameData['name'] = '';
+      this.nameData['breed'] = ''
     },
     checkPhoneFamilyID() {
       return new Promise(resolve => {
-        this.phoneData.map(item => {
-            if (item.phone.phone === this.phone) {
-              resolve(item.family_id);
+        memberRef.onSnapshot(querySnapshot => {
+          querySnapshot.forEach(doc => {
+            if(doc.data().phone.phone === this.phone){
+              resolve(doc.data().family_id)
             }
-        });
-        resolve("noData");
+          });
+          resolve('noData')
+        })
       });
     },
     checkPetFamilyID() {
@@ -464,45 +411,35 @@ export default {
     },
     showNewPetCard() {      
       let new_id = this.generateID() // 生成新 family ID
+      
+      this.familyID = new_id;
+      this.$store.commit('searchData/saveCurrentFamilyID', new_id); // 儲存當前 family ID
+      this.$store.commit('searchData/checkClientStatus', true); // 第一次來的客人
+      this.$store.commit('searchData/setPhone', this.phone); // 儲存當前電話
 
-      this.$store.commit('searchData/saveCurrentFamilyID', new_id) // 儲存當前 family ID
-      this.$store.commit('searchData/checkClientStatus', true) // 第一次來的客人
-      this.$store.commit('searchData/setPhone', this.phone) // 儲存當前電話
-      this.$router.push({ path: 'EditFamilyData'})
-    },
-    getAllData() {
-      return new Promise(resolve => {
-        this.getPhoneData();
-        this.getBreedsData();
-        this.getFamilyData();
-        this.getPetData();
 
-        if(this.petData.length !== 0 && this.familyData.length !== 0 && this.phoneData.length !== 0 ){
-          console.log(this.petData, this.phoneData, this.familyData, 'xxxxxx')
-          // resolve();
-        }
-      });
+      this.phoneSearchFamilyID = this.familyID; // 掛上修改組件
+      this.showEditFamilyData = true; // 顯示修改組件 隱藏搜尋頁面;
     },
     addToOrders() {
       let id = "";
+
       if (this.sameFamilyPetData.length !== 0) {
         let check_select = 0;
+        let order_data = {}; // 以一戶為單位的單據
+        order_data['time'] = new Date().getTime();
+        order_data['process'] = 'doing';
+        order_data['family_id'] = ''
+        order_data['data'] = [];
 
         this.sameFamilyPetData.map(currentSelect => {
           if (currentSelect.status === true) {
             check_select = 1;
             let id = currentSelect.family_id
+            order_data['family_id'] = id;
 
             // 新增至工作單的單據加上時間
-            let order_data = currentSelect;
-            order_data['time'] =  new Date().getTime()           
-
-            // 新增至線上工作單
-            fStore
-              .collection("order")
-              .doc()
-              .set(order_data);
-
+            order_data['data'].push(currentSelect);
 
             //  更新線上該family id 下寵物資料
             fStore
@@ -516,7 +453,7 @@ export default {
                 })            
               })
               .catch(() => {
-                alert('function addToOrders-order error')
+                alert('系統錯誤! addToOrders-order error')
               })
 
             // 更新備註
@@ -531,7 +468,7 @@ export default {
                 })            
               })
               .catch(() => {
-                alert('function addToOrders-comment error')
+                alert('系統錯誤! addToOrders-order error')
               })
 
           }
@@ -539,10 +476,16 @@ export default {
 
         if(check_select === 0){
           alert('還沒選誰要洗澡哦')
+          return
         } else {
+          // 新增至線上工作單
+          fStore
+            .collection("order")
+            .doc()
+            .set(order_data);
+
           alert('已新增至工作單');
           this.petData = [];
-          this.getPetData();
         }
       }
     },
@@ -556,10 +499,12 @@ export default {
       this.showEditFamilyData = true; // 顯示修改組件 隱藏搜尋頁面;
     },
     backToPhoneSearch(){
-      this.showEditFamilyData = false // 顯示搜尋頁面
-      this.phoneSearchFamilyID = '' // destroy 修改組件
+      this.showEditFamilyData = false; // 顯示搜尋頁面
+      this.phoneSearchFamilyID = ''; // destroy 修改組件
+      this.getCertainPetData();
+      this.getCertainFamilyComment();
     },
-    // getCertainPetData 該電話號碼有資料 比對 family ID 拉出寵物資料
+    // 比對 family ID 獲取寵物資料
     getCertainPetData(){
       fStore
         .collection('pet')
@@ -568,16 +513,35 @@ export default {
           querySnapshot.forEach(doc => {
             if(doc.data().family_id === this.familyID){
               this.sameFamilyPetData.push(doc.data());
+              this.noData = false;
+              this.showCard = true;
             }
-            // this.petData.push(doc.data());
           });
         });
-
-      // this.petData.map(item => {
-      //   if (item.family_id === this.familyID) {
-      //     this.sameFamilyPetData.push(item);
-      //   }
-      // });
+    },
+    // 比對 family ID 獲取備註
+    getCertainFamilyComment(){
+      familyRef
+        .onSnapshot(querySnapshot => {
+          querySnapshot.forEach(doc => {
+            if(doc.id === this.familyID){
+              this.comment = doc.data().comment;
+            }
+          })
+        })
+    },
+    // 獲取品種資料
+    getBreedData(){
+      fStore
+        .collection('breed')
+        .get()
+        .then(data => {
+          data.forEach(doc => {
+            doc.data().all_breeds.map(item => {
+              this.breedData.push(item);
+            })
+          })
+        })
     }
   }
 };

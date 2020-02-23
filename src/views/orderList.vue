@@ -1,130 +1,305 @@
 <template>
   <div class="order_list">
-    <div v-for="(item, index) in orders" :key="index" class="each_order_card">
-      <!-- <a-card size="small" :title="item.phone + item.status" style="width: 100%; padding: 6px 12px 12px 12px"> -->
-      <a-card size="small" style="width: 100%; padding: 6px 12px 12px 12px; border-radius: 6px; border: none; border-top: solid 20px #ec5659">
-        <div class="status_block">
-          <!-- <div v-if="item.single_number">{{ item.phone[0] }}</div> -->
-          <a-select
-              :defaultValue="item.phone[0].phone"
+    <div class="today_date">日期: {{ todayDate }}</div>
+    <div class="process_filter">
+      <button class="salon_item un_select" :class="currentFilter === 'all' ? 'is_selected' : ''" @click="getAllOrders">全部</button>
+      <button class="salon_item un_select" :class="currentFilter === 'doing' ? 'is_selected' : ''" @click="getDoingOrders">
+        未完成
+      </button>
+      <button class="salon_item un_select" :class="currentFilter === 'done' ? 'is_selected' : ''" @click="getDoneOrders">
+        已完成
+      </button>
+    </div>
+    <div v-if="searchingData" :style="[loadingBlock]">
+      <a-icon type="loading" />
+    </div>
+    <div v-else>
+      <div v-if="noData" class="no_orders">
+        <a-icon type="warning" />
+        查無資料
+      </div>
+      <div
+        v-else
+        v-for="(item, index) in orders"
+        :key="index"
+        class="each_order_card"
+        :class="[
+          showSalonSelectBlock ? 'turn_disabled' : '',
+          item.process === 'done' ? 'turn_opacity' : ''
+        ]"
+      >
+        <a-card size="small" :style="[cardStyle]">
+          <div class="status_block">
+            <a-select
+              :defaultValue="'查看電話'"
               style="width: 130px"
               @change="handleChange"
             >
-              <a-select-option v-for="(phone, p_index) in item.phone" :key="p_index" :value="phone.phone">{{phone.phone}}</a-select-option>
-          </a-select>
-          <!-- <div><a-icon type="down-circle" /></div> -->
-
-          <!-- <div
-            v-if="item.phone.length > 1"
-            @click="showMultipleNumber(index, item.single_number)"
-          > 
-            <div v-if="item.single_number"><a-icon type="down-circle" /></div>
-            <div v-else><a-icon type="up-circle" /></div>
-          </div> -->
-          <div class="order_edit_block">
-            <a-select
-              :defaultValue="item.status"
-              style="width: 90px"
-              @change="handleChange"
-              v-model="orders[index].status"
-            >
-              <a-select-option value="doing">未完成</a-select-option>
-              <a-select-option value="done">已完成</a-select-option>
-              <a-select-option value="no_answer">未接</a-select-option>
+              <a-select-option
+                v-for="(value, p_index) in item.phone"
+                :key="p_index"
+                :value="value.phone"
+                >{{ value.name }} - {{ value.phone }}</a-select-option
+              >
             </a-select>
-            <div class="edit_block"><a-icon type="edit" /></div>
+            <div class="order_edit_block">
+              <a-select
+                :defaultValue="item.process"
+                style="width: 90px"
+                @change="
+                  setStatus(item.family_id, orders[index].process, item.time)
+                "
+                v-model="orders[index].process"
+              >
+                <a-select-option value="doing">未完成</a-select-option>
+                <a-select-option value="done">已完成</a-select-option>
+                <a-select-option value="no_answer">未接</a-select-option>
+              </a-select>
+              <div class="edit_block">{{ index + 1 }}</div>
+            </div>
+            <!-- <div>{{item.status}}</div> -->
           </div>
-          <!-- <div>{{item.status}}</div> -->
-        </div>
-        <div
-          v-for="(value, num) in item.data"
-          :key="num"
-          class="per_dog_status"
-        >
-        <div class="name_block">{{ value.name }}</div>
-          <div :style="{display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%'}">
-          <div class="items_block">
-            <div class="single_item_block" v-if="value.wash">
-              <button
-                @click="toggle(index, 'wash', item.wash)"
-                class="salon_item is_selected"
-              >
-                洗澡
-              </button>
+          <div
+            v-for="(pet, num) in item.data"
+            :key="num"
+            class="per_dog_status"
+          >
+            <div
+              class="name_block"
+              @click="editSalonData(pet.family_id, pet.id, item.time)"
+            >
+              <span class="name">{{ pet.name }}</span>
+              <span class="breed">- {{ pet.breed }}</span>
             </div>
-            <div class="single_item_block" v-if="value.cut">
-              <button
-                @click="toggle(index, 'cut', item.cut)"
-                class="salon_item is_selected"
-              >
-                美容
-              </button>
+            <div
+              :style="{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                width: '100%'
+              }"
+            >
+              <div class="items_block">
+                <div class="single_item_block" v-if="pet.wash">
+                  <button
+                    @click="toggle(index, 'wash', item.wash)"
+                    class="salon_item is_selected"
+                  >
+                    洗澡
+                  </button>
+                </div>
+                <div class="single_item_block" v-if="pet.cut">
+                  <button
+                    @click="toggle(index, 'cut', item.cut)"
+                    class="salon_item is_selected"
+                  >
+                    美容
+                  </button>
+                </div>
+                <div class="single_item_block" v-if="pet.head">
+                  <button
+                    @click="toggle(index, 'head', item.head)"
+                    class="salon_item is_selected"
+                  >
+                    修頭
+                  </button>
+                </div>
+                <div class="single_item_block" v-if="pet.feet">
+                  <button
+                    @click="toggle(index, 'feet', item.feet)"
+                    class="salon_item is_selected"
+                  >
+                    剃腳
+                  </button>
+                </div>
+                <div class="single_item_block" v-if="pet.mouth">
+                  <button
+                    @click="toggle(index, 'mouth', item.mouth)"
+                    class="salon_item is_selected"
+                  >
+                    剃嘴
+                  </button>
+                </div>
+                <div class="single_item_block" v-if="pet.bug">
+                  <button
+                    @click="toggle(index, 'bug', item.bug)"
+                    class="salon_item is_selected"
+                  >
+                    除蚤
+                  </button>
+                </div>
+                <div class="single_item_block" v-if="pet.herbWash">
+                  <button
+                    @click="toggle(index, 'herbWash', item.herbWash)"
+                    class="salon_item is_selected"
+                  >
+                    藥浴
+                  </button>
+                </div>
+                <div class="single_item_block" v-if="pet.messyHair">
+                  <button
+                    @click="toggle(index, 'messyHair', item.messyHair)"
+                    class="salon_item is_selected"
+                  >
+                    打結
+                  </button>
+                </div>
+                <!-- <div class="price_row">           -->
+              </div>
+              <div>
+                <a-input
+                  placeholder="$$"
+                  :style="[priceInput]"
+                  v-model="pet.price"
+                  type="number"
+                  pattern="\d*"
+                  @blur="
+                    updatePrice(index, num, pet.id, pet.family_id, item.time)
+                  "
+                />
+              </div>
             </div>
-            <div class="single_item_block" v-if="value.head">
-              <button
-                @click="toggle(index, 'head', item.head)"
-                class="salon_item is_selected"
-              >
-                修頭
-              </button>
-            </div>
-            <div class="single_item_block" v-if="value.feet">
-              <button
-                @click="toggle(index, 'feet', item.feet)"
-                class="salon_item is_selected"
-              >
-                剃腳
-              </button>
-            </div>
-            <div class="single_item_block" v-if="value.mouth">
-              <button
-                @click="toggle(index, 'mouth', item.mouth)"
-                class="salon_item is_selected"
-              >
-                剃嘴
-              </button>
-            </div>
-            <div class="single_item_block" v-if="value.bug">
-              <button
-                @click="toggle(index, 'bug', item.bug)"
-                class="salon_item is_selected"
-              >
-                除蚤
-              </button>
-            </div>
-            <div class="single_item_block" v-if="value.herbWash">
-              <button
-                @click="toggle(index, 'herbWash', item.herbWash)"
-                class="salon_item is_selected"
-              >
-                藥浴
-              </button>
-            </div>
-            <div class="single_item_block" v-if="value.messyHair">
-              <button
-                @click="toggle(index, 'messyHair', item.messyHair)"
-                class="salon_item is_selected"
-              >
-                打結
-              </button>
-            </div>
-            <!-- <div class="price_row">           -->
+          </div>
+          <input
+            placeholder="備註"
+            :style="[commentInput]"
+            v-model="orders[index].comment"
+            @blur="updateComment(index, item.family_id)"
+          />
+        </a-card>
+      </div>
+      <transition name="rightIn">
+        <div class="salon_select_block" v-show="showSalonSelectBlock">
+          <div class="salon_select_text">美容項目</div>
+          <div>
+            <button
+              class="salon_item is_selected"
+              v-if="salonSelect.wash"
+              @click="toggleSalonItem('wash', false)"
+            >
+              洗澡<a-icon type="check" />
+            </button>
+            <button
+              class="salon_item un_select"
+              v-else
+              @click="toggleSalonItem('wash', true)"
+            >
+              洗澡
+            </button>
+
+            <button
+              class="salon_item is_selected"
+              v-if="salonSelect.cut"
+              @click="toggleSalonItem('cut', false)"
+            >
+              美容<a-icon type="check" />
+            </button>
+            <button
+              class="salon_item un_select"
+              v-else
+              @click="toggleSalonItem('cut', true)"
+            >
+              美容
+            </button>
+
+            <button
+              class="salon_item is_selected"
+              v-if="salonSelect.head"
+              @click="toggleSalonItem('head', false)"
+            >
+              修頭<a-icon type="check" />
+            </button>
+            <button
+              class="salon_item un_select"
+              v-else
+              @click="toggleSalonItem('head', true)"
+            >
+              修頭
+            </button>
+
+            <button
+              class="salon_item is_selected"
+              v-if="salonSelect.feet"
+              @click="toggleSalonItem('feet', false)"
+            >
+              剃腳<a-icon type="check" />
+            </button>
+            <button
+              class="salon_item un_select"
+              v-else
+              @click="toggleSalonItem('feet', true)"
+            >
+              剃腳
+            </button>
+
+            <button
+              class="salon_item is_selected"
+              v-if="salonSelect.mouth"
+              @click="toggleSalonItem('mouth', false)"
+            >
+              剃嘴<a-icon type="check" />
+            </button>
+            <button
+              class="salon_item un_select"
+              v-else
+              @click="toggleSalonItem('mouth', true)"
+            >
+              剃嘴
+            </button>
+
+            <button
+              class="salon_item is_selected"
+              v-if="salonSelect.bug"
+              @click="toggleSalonItem('bug', false)"
+            >
+              除蚤<a-icon type="check" />
+            </button>
+            <button
+              class="salon_item un_select"
+              v-else
+              @click="toggleSalonItem('bug', true)"
+            >
+              除蚤
+            </button>
+
+            <button
+              class="salon_item is_selected"
+              v-if="salonSelect.herbWash"
+              @click="toggleSalonItem('herbWash', false)"
+            >
+              藥浴<a-icon type="check" />
+            </button>
+            <button
+              class="salon_item un_select"
+              v-else
+              @click="toggleSalonItem('herbWash', true)"
+            >
+              藥浴
+            </button>
+
+            <button
+              class="salon_item is_selected"
+              v-if="salonSelect.messyHair"
+              @click="toggleSalonItem('messyHair', false)"
+            >
+              打結<a-icon type="check" />
+            </button>
+            <button
+              class="salon_item un_select"
+              v-else
+              @click="toggleSalonItem('messyHair', true)"
+            >
+              打結
+            </button>
           </div>
           <div>
-            <a-input
-                placeholder="$$"
-                :style="[priceInput]"
-                v-model="item.price"
-              />
-          </div>
+            <button class="salon_item" @click="salonUpdateConfirm">確認</button>
+            <button class="salon_item" @click="hideSalonSelectBlock">
+              取消
+            </button>
           </div>
         </div>
-        <a-input
-          placeholder="備註"
-          :style="[commentInput]"
-          v-model="item.comment"
-        />
-      </a-card>
+      </transition>
     </div>
   </div>
 </template>
@@ -132,105 +307,339 @@
 <script>
 import { db } from "../firebase";
 const fStore = db.firestore();
+const orderRef = fStore.collection("order");
+const familyRef = fStore.collection("family");
+const memberRef = fStore.collection("member");
 
 export default {
-  name: 'orderList',
+  name: "orderList",
   data() {
     return {
-      test: '',
+      noData: false,
+      searchingData: false,
       commentInput: {
         width: "100%",
-        marginTop: "10px"
+        marginTop: "10px",
+        border: "solid 1px rgba(0,0,0,.1)",
+        padding: "4px 12px",
+        borderRadius: "5px",
+        outline: "none"
       },
       priceInput: {
-        width: "80px"
+        width: "80px",
+        fontSize: "16px"
       },
-      orders: [
-        {
-          // single_number: true,
-          phone: ["0981738759", "123 123"],
-          status: "打電話未接",
-          comment: '測試測試測試測試測試測試',
-          data: [
-            {
-              name: "蹦蹦跳跳",
-              wash: true,
-              head: true,
-              feed: "Dash"
-            }
-          ]
-        },
-        {
-          // single_number: true,
-          phone: ["09333333456", "456"],
-          status: "未完成",
-          comment: "有零食還沒付錢",
-          data: [
-            {
-              name: "阿諺",
-              wash: true,
-              cut: true,
-              feet: true,
-              mouth: true,
-              bug: true,
-              head: true,
-              feed: "Dash"
-            },
-            {
-              name: "阿滑",
-              herbWash: true,
-              wash: true,
-            }
-          ]
-        }
-      ]
+      orders: [],
+      salonSelect: {
+        wash: false,
+        cut: false,
+        head: false,
+        feet: false,
+        mouth: false,
+        bug: false,
+        herbWash: false,
+        messyHair: false
+      },
+      showSalonSelectBlock: false,
+      currentSelect: {
+        family_id: "",
+        id: ""
+      },
+      cardStyle: {
+        width: "100%",
+        padding: "6px 12px 12px 12px",
+        borderRadius: "6px",
+        border: "none",
+        borderTop: "solid 20px #ec5659"
+      },
+      loadingBlock: {
+        position: "absolute",
+        top: "50%",
+        left: "50%",
+        transform: "translate(-50%, -50%)",
+        fontSize: "70px",
+        color: "#ec5659"
+      },
+      todayDate: "",
+      currentFilter: ''
     };
   },
-  mounted(){
-    this.getAllOrders()
+  mounted() {
+    this.getAllOrders();
+    this.getTime();
   },
   methods: {
-    // showMultipleNumber(index, status) {
-    //   this.orders[index].single_number = !status;
-    // },
     handleChange(value) {
-      this.test = value
+      this.test = value;
       // console.log(`selected ${value}`);
     },
-    getAllOrders(){
-      fStore.collection('order').get().then(data => {
+    setStatus(id, process, time) {
+      orderRef.get().then(data => {
         data.forEach(doc => {
-          let current_data = {};
-          current_data['data'] = [];
-          current_data['data'].push(doc.data());
-          current_data['phone'] = doc.data().phone;
-          current_data['status'] = '未完成'
-          this.orders.push(current_data)
-        })
-      })
+          if (doc.data().family_id === id && doc.data().time === time) {
+            // this.orders = []; //清空等等更新完拿回新資料     
+            orderRef.doc(doc.id).update({ process: process });
+          }
+        });
+      });
+      alert("更新成功");
+    },
+    getTime() {
+      let current_year = new Date().getFullYear();
+      let current_month = new Date().getMonth();
+      let current_date = new Date().getDate();
+      let time = new Date(current_year, current_month, current_date).getTime();
+      this.todayDate =
+        current_year + " - " + current_month + " - " + current_date;
+      return time;
+    },
+    getAllOrders() {
+      let family_id_arr = [];
+      let time = this.getTime();
+      this.searchingData = true;
+      this.currentFilter = 'all';
+
+      orderRef
+        .where("time", ">", time) // 秀今天的工作單
+        .orderBy("time", "asc")
+        .onSnapshot(querySnapshot => {
+          this.orders = [];
+
+          querySnapshot.forEach(doc => {
+            let current_data = doc.data();
+
+
+            console.log(current_data, 'aaaa')
+
+            // 取得備註
+            familyRef.onSnapshot(querySnapshot => {
+              querySnapshot.forEach(familyDoc => {
+                if (familyDoc.id === doc.data().family_id) {
+                  current_data["comment"] = familyDoc.data().comment;
+                }
+              });
+            });
+
+            // 取得電話
+            current_data["phone"] = [];
+            memberRef.onSnapshot(querySnapshot => {
+              querySnapshot.forEach(memberDoc => {
+                if (memberDoc.data().family_id === doc.data().family_id) {
+                  current_data["phone"].push(memberDoc.data().phone);
+                }
+              });
+            });
+            this.orders.push(current_data);
+          });
+
+          if (this.orders.length === 0) {
+            this.noData = true;
+            this.searchingData = false;
+          } else {
+            this.noData = false;
+            this.searchingData = false;
+          }
+        });
+    },
+    // 線上該寵物的美容項目儲存到組件中
+    editSalonData(family_id, id, time) {
+      let keys = Object.keys(this.salonSelect);
+      // 美容項目的key 值
+      this.showSalonSelectBlock = true;
+      this.currentSelect["family_id"] = family_id;
+      this.currentSelect["id"] = id;
+      this.currentSelect['time'] = time;
+
+      orderRef
+        .where("family_id", "==", family_id)
+        .where('time', '==', time)
+        .get()
+        .then(data => {
+          data.forEach(doc => {
+            let pet_data = doc.data().data;
+            pet_data.map(item => {
+              if (item.id === id) {
+                for (let i = 0; i < keys.length; i++) {
+                  this.salonSelect[keys[i]] = item[keys[i]];
+                }
+              }
+            });
+          });
+        });
+    },
+    toggleSalonItem(item, status) {
+      this.salonSelect[item] = status;
+    },
+    hideSalonSelectBlock() {
+      this.showSalonSelectBlock = false;
+    },
+    // 更新美容項目
+    salonUpdateConfirm() {
+      let keys = Object.keys(this.salonSelect); // 美容項目的key 值
+      let updated_data = []; // 儲存要更新回資料庫的寵物資料
+
+      orderRef
+        .where("family_id", "==", this.currentSelect.family_id)
+        .where('time', '==', this.currentSelect.time)
+        .get()
+        .then(data => {
+          data.forEach(doc => {
+            let pets = doc.data().data;
+            pets.map(item => {
+              if (item.id === this.currentSelect.id) {
+                for (let i = 0; i < keys.length; i++) {
+                  item[keys[i]] = this.salonSelect[keys[i]];
+                }
+              }
+
+              updated_data.push(item);
+            });
+
+            this.orders = []; //清空等等更新完拿回新資料
+            orderRef.doc(doc.id).update({ data: updated_data });
+
+            this.showSalonSelectBlock = false;
+            alert("更新成功");
+          });
+        });
+    },
+    // 更新價格
+    updatePrice(index, num, id, family_id, time) {
+      // index, data內index, 自身id, family id
+      let updated_data = []; // 儲存要更新回資料庫的寵物資料
+
+      orderRef
+        .where("family_id", "==", family_id)
+        .where("time", "==", time)
+        .get()
+        .then(data => {
+          data.forEach(doc => {
+            let pet_data = doc.data().data;
+            pet_data.map(item => {
+              if (item.id === id) {
+                item.price = this.orders[index].data[num].price;
+              }
+
+              updated_data.push(item);
+            });
+
+            this.orders = []; //清空等等更新完拿回新資料
+            orderRef.doc(doc.id).update({ data: updated_data });
+
+            alert("更新成功");
+          });
+        });
+    },
+    updateComment(index, family_id) {
+      familyRef.doc(family_id).update({ comment: this.orders[index].comment });
+
+      alert("更新成功");
+    },
+    getDoingOrders() {
+      let time = this.getTime();
+      this.searchingData = true;
+      this.currentFilter = 'doing';
+
+      orderRef
+        .where("time", ">", time) // 秀今天的工作單
+        .where("process", "==", "doing")
+        .orderBy("time", "asc")
+        .get()
+        .then(querySnapshot => {
+          this.orders = [];
+
+          querySnapshot.forEach(doc => {
+            let current_data = doc.data();
+
+            // 取得備註
+            familyRef.onSnapshot(querySnapshot => {
+              querySnapshot.forEach(familyDoc => {
+                if (familyDoc.id === doc.data().family_id) {
+                  current_data["comment"] = familyDoc.data().comment;
+                }
+              });
+            });
+
+            // 取得電話
+            current_data["phone"] = [];
+            memberRef.onSnapshot(querySnapshot => {
+              querySnapshot.forEach(memberDoc => {
+                if (memberDoc.data().family_id === doc.data().family_id) {
+                  current_data["phone"].push(memberDoc.data().phone);
+                }
+              });
+            });
+            this.orders.push(current_data);
+          });
+          
+          if (this.orders.length === 0) {
+            this.noData = true;
+            this.searchingData = false;
+          } else {
+            this.noData = false;
+            this.searchingData = false;
+          }
+        });
+    },
+    getDoneOrders() {
+      let time = this.getTime();
+      this.searchingData = true;
+      this.currentFilter = 'done';
+
+      orderRef
+        .where("time", ">", time) // 秀今天的工作單
+        .where("process", "==", "done")
+        .orderBy("time", "asc")
+        .get()
+        .then(querySnapshot => {
+          this.orders = [];
+          querySnapshot.forEach(doc => {
+            let current_data = doc.data();
+
+            // 取得備註
+            familyRef.onSnapshot(querySnapshot => {
+              querySnapshot.forEach(familyDoc => {
+                if (familyDoc.id === doc.data().family_id) {
+                  current_data["comment"] = familyDoc.data().comment;
+                }
+              });
+            });
+
+            // 取得電話
+            current_data["phone"] = [];
+            memberRef.onSnapshot(querySnapshot => {
+              querySnapshot.forEach(memberDoc => {
+                if (memberDoc.data().family_id === doc.data().family_id) {
+                  current_data["phone"].push(memberDoc.data().phone);
+                }
+              });
+            });
+            this.orders.push(current_data);
+          });
+
+          if (this.orders.length === 0) {
+            this.noData = true;
+            this.searchingData = false;
+          } else {
+            this.noData = false;
+            this.searchingData = false;
+          }
+        });
     }
-  },
-  // computed:{
-  //   getOrder(){
-  //     return this.$store.state.orderList.orderList
-  //   }
-  // },
-  // watch:{
-  //   getOrder(data){
-  //     this.orders.push(data)
-  //   }
-  // }
+  }
 };
 </script>
 
 <style lang="sass">
-$main-color: #4a707a
-$pet-name-color: rgba(0,0,0,.7)
+@import '../styles/basics/_common_var.scss'
+
+// $main-color: #4a707a
+// $pet-name-color: rgba(0,0,0,.7)
 
 //test
 // $main-color: #064789
 // 064789
-$main-color: #ec5659
+// $main-color: #ec5659
 
 .order_list
   width: 90vw
@@ -252,19 +661,20 @@ $main-color: #ec5659
       padding: 0
       background-color: $main-color
       border: none
+      margin: 2px
 
 
 .per_dog_status
     display: flex
     align-items: center
-    margin-top: 16px
+    margin-top: 8px
     flex-wrap: wrap
 
 .name_block
   margin-right: 5px
-  width: 60%
+  width: 50%
   text-align: left
-  color: $pet-name-color
+  color: $text-color-grey
   font-weight: 700
   padding-left: 5px
   font-size: 16px
@@ -294,7 +704,129 @@ $main-color: #ec5659
   margin-left: 20px
 
 .edit_block
-  font-size: 16px
-  color: $main-color
+  background-color: $main-color
+  width: 20px
+  height: 20px
+  color: white
+  line-height: 17px
+  padding: 2px
+  font-size: 12px
+  font-weight: 600
 
+.no_orders
+  background-color: $card-color
+  width: 70vw
+  border-top: solid 20px $main-color
+  font-size: 14px
+  font-weight: 500
+  padding: 12px 15px
+  border-radius: 5px
+  position: absolute
+  top: 50%
+  left: 50%
+  transform: translate(-50%, -50%)
+
+  i
+    font-size: 18px
+    color: $main-color
+    margin-right: 10px
+
+.salon_select_block
+  width: 50vw
+  height: 100vh
+  background-color: $card-color
+  position: fixed
+  top: 50px // 上方導覽列高度
+  right: 0
+
+  .salon_item
+      letter-spacing: 2px
+      width: 60px
+      font-size: 12px
+      user-select: none
+      -ms-touch-action: manipulation
+      touch-action: manipulation
+      height: 32px
+      padding: 0 12px
+      border-radius: 4px
+      position: relative
+      display: inline-block
+      font-weight: 400
+      white-space: nowrap
+      text-align: center
+      outline: none
+      margin: 12px 5px
+
+      .anticon-check
+          margin-left: 1px
+          font-size: 10px
+
+.un_select
+    background-color: transparent
+    border-color: $main-color
+    color: $main-color
+
+.is_selected
+    background-color: $main-color
+    border-color: $main-color
+    color: $text-color-light
+
+.salon_select_text
+  color: $text-color-blue
+  font-weight: 500
+  letter-spacing: 1px
+  padding: 12px 15px
+  border-bottom: solid 1px rgba(0,0,0,.1)
+  margin-bottom: 15px
+
+.rightIn-enter
+  right: -500px
+
+.rightIn-enter-active
+  transition: 1.5s
+
+.rightIn-enter-to
+  right: 0
+
+.rightIn-leave
+  right: 0
+
+.rightIn-leave-active
+  transition: 1s
+
+.rightIn-leave-to
+  right: -500px
+
+.turn_disabled
+  opacity: .5
+  pointer-events: none
+
+.name_block
+  .name
+    color: $text-color-blue
+    font-size: 20px
+    margin-right: 5px
+
+  .breed
+    color: $text-color-grey
+    font-size: 14px
+
+.today_date
+  color: $text-color-blue
+  font-weight: 500
+  text-align: left
+  font-size: 18px
+  padding-left: 10px
+
+.turn_opacity
+  opacity: .6
+
+.process_filter
+  margin: 12px 0 20px 0
+  display: flex
+  button 
+    margin-right: 10px
+    &:focus
+      background-color: $main-color
+      color: white
 </style>
