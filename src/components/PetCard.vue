@@ -299,30 +299,31 @@ $fz-color: rgba(0,0,0,.4)
     font-size: 12px
 
 .salon_item
-    letter-spacing: 2px
-    width: 60px
-    font-size: 12px
-    user-select: none
-    -ms-touch-action: manipulation
-    touch-action: manipulation
-    height: 32px
-    padding: 0 12px
-    border-radius: 4px
-    position: relative
-    display: inline-block
-    font-weight: 400
-    white-space: nowrap
-    text-align: center
-    outline: none
+  border: none
+  letter-spacing: 2px
+  width: 60px
+  font-size: 12px
+  user-select: none
+  -ms-touch-action: manipulation
+  touch-action: manipulation
+  height: 32px
+  padding: 0 12px
+  border-radius: 4px
+  position: relative
+  display: inline-block
+  font-weight: 400
+  white-space: nowrap
+  text-align: center
+  outline: none
 
-    .anticon-check
-        margin-left: 1px
-        font-size: 10px
+  .anticon-check
+    margin-left: 1px
+    font-size: 10px
 
 .un_select
-    background-color: transparent
-    border-color: $main-color
-    color: $main-color
+  background-color: transparent
+  border: solid 1px $main-color
+  color: $main-color
 
 .is_selected
     background-color: $main-color

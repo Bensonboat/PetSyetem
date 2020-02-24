@@ -4,7 +4,9 @@
       <router-link to="/" class="tab">首頁</router-link>
       <router-link to="/List" class="tab">工作單</router-link>
     </div>
-    <router-view/>
+    <div class="view">
+      <router-view/>
+    </div>
   </div>
 </template>
 
@@ -39,5 +41,8 @@ $main-color: rgb(236, 86, 89)
 
 #nav .router-link-exact-active
     opacity: 1
+
+.view
+  height: 100%
 
 </style>

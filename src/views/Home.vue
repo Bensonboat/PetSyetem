@@ -34,7 +34,7 @@
           </div>
           <div v-else :style="[nameDataBlock]">
             <a-input
-              placeholder="請輸入名稱"
+              placeholder="名稱"
               v-model="nameData.name"
               :style="[petNameBlock]"
               @keyup.enter="petNameSearch"
@@ -189,11 +189,12 @@ export default {
         width: '25px'
       },
       petNameBlock: {
-        width: "40%",
+        width: "45%",
         letterSpacing: "2px",
         fontSize: "12px",
         fontWeight: 700,
-        color: "#216583"
+        color: "#216583",
+        fontSize: '16px',
       },
       nameDataBlock: {
         width: "100%",
@@ -596,7 +597,7 @@ $third-color: #4a707a
     letter-spacing: 2px
     height: 50px
     font-size: 16px
-    color: $fz-color
+    color: $text-color-blue
     font-weight: 700
     font-family: 'Courier New'
 
@@ -661,6 +662,7 @@ $third-color: #4a707a
   align-items: center
 
 .search_btn
+  border: none
   margin-top: 15px
   letter-spacing: 2px
   width: 70px
