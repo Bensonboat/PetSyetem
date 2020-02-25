@@ -11,7 +11,7 @@
           已完成
         </button>
       </div>
-      <div>狗數: {{totalNumToday}}</div>
+      <div class="totoal_num_block">總量: {{totalNumToday}}</div>
     </div>
     <div v-if="searchingData" :style="[loadingBlock]">
       <a-icon type="loading" />
@@ -295,11 +295,9 @@
               打結
             </button>
           </div>
-          <div>
-            <button class="salon_item" @click="salonUpdateConfirm">確認</button>
-            <button class="salon_item" @click="hideSalonSelectBlock">
-              取消
-            </button>
+          <div class="update_item_btn_block">
+            <button class="salon_item update_item_btn" @click="salonUpdateConfirm">確認<a-icon type="check" /></button>
+            <button class="salon_item update_item_btn" :style="{backgroundColor: '#d3d3d3'}" @click="hideSalonSelectBlock">取消<a-icon type="close" /></button>
           </div>
         </div>
       </transition>
@@ -401,7 +399,7 @@ export default {
       return time;
     },
     getAllOrders() {
-      let family_id_arr = [];
+      // let family_id_arr = [];
       let time = this.getTime();
       this.searchingData = true;
       this.currentFilter = 'all';
@@ -853,4 +851,17 @@ export default {
   justify-content: space-between
   color: $text-color-blue
   font-weight: 500
+
+.update_item_btn_block
+  background-color: $main-color
+
+.update_item_btn
+  border: none
+  color: $danger-color
+  background-color: $card-color
+
+.totoal_num_block
+  font-weight: 600
+  padding-right: 10px
+
 </style>

@@ -40,7 +40,7 @@ export default {
     },
     methods: {
         editFamilyData(id){
-            this.petSearchFamilyID = id
+            this.petSearchFamilyID = id;
             this.$store.commit('searchData/saveCurrentFamilyID', id)
         },
         backToPetSearch(){

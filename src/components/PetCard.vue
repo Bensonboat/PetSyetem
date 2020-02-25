@@ -158,7 +158,7 @@
             </div>
             <!-- <slot name="delete_pet"></slot> -->
             <div @click="deletePet(index)">
-              <a-icon type="minus-circle" class="delete_icon"/>
+              <a-icon type="delete" class="delete_icon"/>
             </div>
           </div>
         </div>

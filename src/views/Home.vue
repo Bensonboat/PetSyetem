@@ -597,7 +597,6 @@ $third-color: #4a707a
     font-size: 16px
     color: $text-color-blue
     font-weight: 700
-    font-family: 'Courier New'
 
   .number_font
     font-size: 18px
@@ -630,15 +629,17 @@ $third-color: #4a707a
   transition: 1s
   top: 20%
 
-.fade-enter-active, .fade-leave-active
-  transition: 1s
+.fade-enter
+  transform: translateY(500px)
 
-.fade-enter, .fade-leave-active
-  opacity: 0
-  transform: translateY(-200px)
+.fade-enter-active
+  transition: 2s
+
+.fade-leave-active
+  transition: 1.5s
 
 .fade-leave-to
-  transform: translateY(200px)
+  transform: translateY(1000px)
 
 .show_card_block
   margin: 30px auto 0 auto

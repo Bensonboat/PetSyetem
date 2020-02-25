@@ -32,7 +32,7 @@
                             ">
                         </div>
                         <div class="delete_icon" @click="deletePhone(index)">
-                            <a-icon type="minus-circle" />
+                            <a-icon type="delete" />
                         </div>
                     </div>
                 </div>
@@ -245,9 +245,9 @@ export default {
                     });
                 });
         },
-        backToSearchPage(){
-            this.$router.push({ path: '/'})
-        },
+        // backToSearchPage(){
+        //     this.$router.push({ path: '/'})
+        // },
         updateConfirm(){
             let new_client = this.$store.state.searchData.new_client;
 
@@ -324,8 +324,8 @@ export default {
                                 .doc()
                                 .set(item);
                         }
-                    })
-            })
+                    });
+            });
 
             this.deletePhonesData.map(item => {
                 fStore
@@ -337,8 +337,8 @@ export default {
                             if(doc.data().phone.id === item.id){
                                 fStore.collection('member').doc(doc.id).delete()
                             }
-                        })
-                    })
+                        });
+                    });
             });
 
             this.deletePetsData.map(item => {
@@ -350,9 +350,8 @@ export default {
                     .then(data => {
                         data.forEach(doc => {
                             fStore.collection('pet').doc(doc.id).delete()
-                        })
-                    })
-
+                        });
+                    });
             });
 
             // 更新備註
