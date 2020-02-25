@@ -15,4 +15,4 @@ measurementId: "G-QTQXD4LRG7"
 const firebaseApp = firebase.initializeApp(firebaseConfig);
 // firebase.analytics();
 
-export const db = firebaseApp
+export const db = firebaseApp;
