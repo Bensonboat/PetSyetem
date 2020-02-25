@@ -1,14 +1,17 @@
 <template>
   <div class="order_list">
     <div class="today_date">日期: {{ todayDate }}</div>
-    <div class="process_filter">
-      <button class="salon_item un_select" :class="currentFilter === 'all' ? 'is_selected' : ''" @click="getAllOrders">全部</button>
-      <button class="salon_item un_select" :class="currentFilter === 'doing' ? 'is_selected' : ''" @click="getDoingOrders">
-        未完成
-      </button>
-      <button class="salon_item un_select" :class="currentFilter === 'done' ? 'is_selected' : ''" @click="getDoneOrders">
-        已完成
-      </button>
+    <div class="filter_row">
+      <div class="process_filter">
+        <button class="salon_item un_select" :class="currentFilter === 'all' ? 'is_selected' : ''" @click="getAllOrders">全部</button>
+        <button class="salon_item un_select" :class="currentFilter === 'doing' ? 'is_selected' : ''" @click="getDoingOrders">
+          未完成
+        </button>
+        <button class="salon_item un_select" :class="currentFilter === 'done' ? 'is_selected' : ''" @click="getDoneOrders">
+          已完成
+        </button>
+      </div>
+      <div>狗數: {{totalNumToday}}</div>
     </div>
     <div v-if="searchingData" :style="[loadingBlock]">
       <a-icon type="loading" />
@@ -323,7 +326,8 @@ export default {
         border: "solid 1px rgba(0,0,0,.1)",
         padding: "4px 12px",
         borderRadius: "5px",
-        outline: "none"
+        outline: "none",
+        fontSize: '16px'
       },
       priceInput: {
         width: "80px",
@@ -361,7 +365,8 @@ export default {
         color: "#ec5659"
       },
       todayDate: "",
-      currentFilter: ''
+      currentFilter: '',
+      totalNumToday: ''
     };
   },
   mounted() {
@@ -389,8 +394,10 @@ export default {
       let current_month = new Date().getMonth();
       let current_date = new Date().getDate();
       let time = new Date(current_year, current_month, current_date).getTime();
-      this.todayDate =
-        current_year + " - " + current_month + " - " + current_date;
+      
+      current_month < 10 ? current_month = '0' + current_month : current_month;
+      current_date < 10 ? current_date = '0' + current_date : current_date;
+      this.todayDate = current_year + " - " + current_month + " - " + current_date;
       return time;
     },
     getAllOrders() {
@@ -430,6 +437,7 @@ export default {
               });
             });
             this.orders.push(current_data);
+            this.getTotalNumToday();
           });
 
           if (this.orders.length === 0) {
@@ -625,6 +633,17 @@ export default {
             this.searchingData = false;
           }
         });
+    },
+    getTotalNumToday(){
+      let total_num = '';
+
+      this.orders.map(item => {
+        item.data.map(() => {
+          total_num++
+        })
+      });
+
+      this.totalNumToday = total_num;
     }
   }
 };
@@ -806,6 +825,7 @@ export default {
     color: $text-color-blue
     font-size: 20px
     margin-right: 5px
+    border-bottom: solid 1px $text-color-blue
 
   .breed
     color: $text-color-grey
@@ -816,7 +836,7 @@ export default {
   font-weight: 500
   text-align: left
   font-size: 18px
-  padding-left: 10px
+  font-size: 14px
 
 .turn_opacity
   opacity: .6
@@ -829,4 +849,11 @@ export default {
     &:focus
       background-color: $main-color
       color: white
+
+.filter_row
+  display: flex
+  align-items: center
+  justify-content: space-between
+  color: $text-color-blue
+  font-weight: 500
 </style>

@@ -17,6 +17,9 @@ export default{
 
 
 <style>
+html, body {
+  height: 100%;
+}
 
 #app {
   font-family: "Avenir", Helvetica, Arial, sans-serif;
@@ -24,7 +27,8 @@ export default{
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  height: 100vh;
+  /* height: 90vh; */
+  height: 100%;
   /* background-color: #eef9bf; */
   /* background-color: #e8f1f5; */
   background-color: rgb(239, 204 , 210);
@@ -32,6 +36,7 @@ export default{
   padding: 0;
   margin: 0;
   -webkit-overflow-scrolling: touch;
+  /* min-height: -webkit-fill-available */
 }
 
 #nav a {

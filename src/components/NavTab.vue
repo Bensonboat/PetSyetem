@@ -43,6 +43,8 @@ $main-color: rgb(236, 86, 89)
     opacity: 1
 
 .view
-  height: 100%
-
+  min-height: -webkit-fill-available
+//   overflow: scroll
+//   position: fixed
+//   width: 100vw
 </style>
