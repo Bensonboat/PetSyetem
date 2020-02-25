@@ -4,7 +4,6 @@
     <!-- <img src="./assets/No.018.jpg" alt=""> -->
   </div>
 </template>
-<!-- test -->
 <script>
 import navTab from './components/NavTab'
 export default{
@@ -15,14 +14,13 @@ export default{
 }
 </script>
 
-
 <style>
 html, body {
   height: 100%;
 }
 
 #app {
-  font-family: "Avenir", Helvetica, Arial, sans-serif;
+  font-family: 微軟正黑體, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;

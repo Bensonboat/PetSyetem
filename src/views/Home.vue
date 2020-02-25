@@ -174,7 +174,6 @@ export default {
         display: "flex",
         alignSelf: "center",
         fontSize: "15px",
-        color: "#FF2C55",
         height: '50px',
         borderRadius: '0 5px 5px 0',
         backgroundColor: '#ec5659',
@@ -191,7 +190,6 @@ export default {
       petNameBlock: {
         width: "45%",
         letterSpacing: "2px",
-        fontSize: "12px",
         fontWeight: 700,
         color: "#216583",
         fontSize: '16px',
@@ -238,16 +236,16 @@ export default {
     };
   },
   mounted() {
-    this.getBreedData()
+    this.getBreedData();
     this.$store.commit('searchData/checkClientStatus', false) // 確認是不是第一次來的客人
   },
   watch: {
-    phone(val) {
+    phone() {
       this.showCard = false;
       this.noData = false;
     },
     nameData: {
-      handler(val) {
+      handler() {
         this.showCard = false;
         this.noData = false;
       },
@@ -268,8 +266,8 @@ export default {
           this.noData = true;
         } else {
           this.familyID = id; // 組件內儲存 id
-          this.getCertainPetData()   // 比對 family ID 拉出寵物資料
-          this.getCertainFamilyComment() // 比對 family ID 拉出備註   
+          this.getCertainPetData();   // 比對 family ID 拉出寵物資料
+          this.getCertainFamilyComment(); // 比對 family ID 拉出備註
           this.showCard = true;
         }
         this.searching = false;
@@ -296,12 +294,12 @@ export default {
                     let other_pet = {
                       name: doc.data().name,
                       breed: doc.data().breed
-                    }
+                    };
                     item.data.push(other_pet)
                   }
                 })
               })
-            })
+            });
           this.showCard = true;
         } else {
           this.noData = true;
@@ -370,7 +368,7 @@ export default {
                         breed: doc.data().breed,
                         family_id: doc.data().family_id,
                         data: []
-                      }
+                      };
 
                       // 儲存符合條件的對象
                       this.petSearchData.push(data)
@@ -385,14 +383,14 @@ export default {
                         breed: doc.data().breed,
                         family_id: doc.data().family_id,
                         data: []
-                      }
+                      };
                       this.petSearchData.push(data)
                     }
                   }
                 }
               }
-            })
-            resolve()
+            });
+            resolve();
           })
       });
     },
@@ -411,7 +409,7 @@ export default {
       });
     },
     showNewPetCard() {      
-      let new_id = this.generateID() // 生成新 family ID
+      let new_id = this.generateID(); // 生成新 family ID
       
       this.familyID = new_id;
       this.$store.commit('searchData/saveCurrentFamilyID', new_id); // 儲存當前 family ID
@@ -430,13 +428,13 @@ export default {
         let order_data = {}; // 以一戶為單位的單據
         order_data['time'] = new Date().getTime();
         order_data['process'] = 'doing';
-        order_data['family_id'] = ''
+        order_data['family_id'] = '';
         order_data['data'] = [];
 
         this.sameFamilyPetData.map(currentSelect => {
           if (currentSelect.status === true) {
             check_select = 1;
-            let id = currentSelect.family_id
+            let id = currentSelect.family_id;
             order_data['family_id'] = id;
 
             // 新增至工作單的單據加上時間
@@ -476,7 +474,7 @@ export default {
         });
 
         if(check_select === 0){
-          alert('還沒選誰要洗澡哦')
+          alert('還沒選誰要洗澡哦');
           return
         } else {
           // 新增至線上工作單
@@ -495,8 +493,8 @@ export default {
       this.nameData.breed = ''
     },
     editFamilyData() {
-      this.$store.commit('searchData/saveCurrentFamilyID', this.familyID) // 儲存當前 family ID for EditFamilyData 組件拿
-      this.phoneSearchFamilyID = this.familyID // 掛上修改組件
+      this.$store.commit('searchData/saveCurrentFamilyID', this.familyID); // 儲存當前 family ID for EditFamilyData 組件拿
+      this.phoneSearchFamilyID = this.familyID; // 掛上修改組件
       this.showEditFamilyData = true; // 顯示修改組件 隱藏搜尋頁面;
     },
     backToPhoneSearch(){

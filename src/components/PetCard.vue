@@ -27,7 +27,7 @@
                   v-for="(item, index) in breedData"
                   :key="index"
                   :value="item.value"
-                  >{{ item.name }}</a-select-option
+                  >{{item.name}}</a-select-option
                 >
               </a-select>
             </div>
@@ -224,7 +224,7 @@ export default {
   watch: {
     sameFamilyPetData:{
       immediate: true, 
-      handler (val, oldVal) {
+      handler (val) {
         this.allCards = val
       }
     }

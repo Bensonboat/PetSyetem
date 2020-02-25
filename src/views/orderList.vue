@@ -415,9 +415,6 @@ export default {
           querySnapshot.forEach(doc => {
             let current_data = doc.data();
 
-
-            console.log(current_data, 'aaaa')
-
             // 取得備註
             familyRef.onSnapshot(querySnapshot => {
               querySnapshot.forEach(familyDoc => {

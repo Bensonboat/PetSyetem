@@ -103,7 +103,7 @@ export default {
 
         // 首次新增時
         if(this.$store.state.searchData.new_client === true){
-            let new_id = this.generateID()
+            let new_id = this.generateID();
             this.phonesData.push({
                 id: new_id,
                 name: '',
@@ -145,7 +145,7 @@ export default {
                 id: new_id,
                 name: '',
                 phone: ''
-            }
+            };
 
             this.phonesData.push(blank_phone_data)
         },
@@ -156,7 +156,7 @@ export default {
                 .then(data => {
                 data.forEach(doc => {
                     this.breedsList = doc.data().all_breeds;
-                });
+                    });
                 });
             },
         addNewPet(){
@@ -175,29 +175,28 @@ export default {
                 bug: false,
                 herbWash: false,
                 messyHair: false,
-                // showComment: false,
                 price: '',
                 status: false,
                 reject: 'normal'
-            }
+            };
 
             this.petsData.push(blank_pet_data);
 
             // 自動滾至下方
-            let that = this
+            let that = this;
             setTimeout(() => {
                 that.$refs.edit_family_data.parentElement.parentElement.scrollTop = that.$refs.edit_family_data.parentElement.parentElement.scrollHeight + 1000
             }, 200)
         },
         deletePhone(index){
             if(confirm('確定要刪除？')){
-                this.deletePhonesData.push(this.phonesData[index])
+                this.deletePhonesData.push(this.phonesData[index]);
                 this.phonesData.splice(index, 1)
             }
         },
         deletePet(index){
             if(confirm('確定要刪除？')){
-                this.deletePetsData.push(this.petsData[index])
+                this.deletePetsData.push(this.petsData[index]);
                 this.petsData.splice(index, 1)
             }
         },
@@ -253,7 +252,7 @@ export default {
             let new_client = this.$store.state.searchData.new_client;
 
             if(this.petsData.length === 0 || this.phonesData.length === 0){
-                alert('請輸入至少一筆資料')
+                alert('請輸入至少一筆資料');
                 return
             }
 
@@ -277,7 +276,7 @@ export default {
                         data.forEach(doc => {
                             let data = {
                                 phone: item
-                                }
+                                };
 
                             if(doc.data().phone.id === item.id){
                                 // 有資料就更新
@@ -292,7 +291,7 @@ export default {
                             let data = {
                                 family_id: this.familyID,
                                 phone: item
-                            }
+                            };
 
                             fStore
                                 .collection("member")
@@ -312,7 +311,7 @@ export default {
                     .then(data => {
                         data.forEach(doc => {
                             if(doc.data().family_id === this.familyID && doc.data().id === item.id){
-                                old_data = true
+                                old_data = true;
                                 fStore.collection('pet').doc(doc.id).update(item)
                             }
                         });
@@ -360,7 +359,7 @@ export default {
             fStore
                 .collection("family")
                 .doc(this.familyID)
-                .update({comment: this.comment})
+                .update({comment: this.comment});
 
             this.loading = true;
 
