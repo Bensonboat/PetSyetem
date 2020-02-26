@@ -1,24 +1,21 @@
 <template>
   <div class="order_list">
-    <transition name="rightIn">
+    <transition name="topIn">
       <div 
         v-show="showContactInfo"
-        class="salon_select_block"
-        :style="{zIndex: '2'}"
-        >
-        
-        <!-- <div>123</div> -->
-        <div v-for="(item, index) in contactInfo" :key="index">
+        class="contact_block"
+      >
+        <!-- <div v-for="(item, index) in contactInfo" :key="index">
             <a :href="'tel:'+ item.phone" slot="extra">{{item.name}} -  {{item.phone}}</a>    
         </div>
         <div>
             <button @click="hideContactBlock">取消</button>
-        </div>
+        </div> -->
 
-        <!-- <contact-card
+        <contact-card
           @hideContactBlock="hideContactBlock"
           :contact="contactInfo"
-        /> -->
+        />
       </div>
     </transition>
     <div class="today_date">日期: {{ todayDate }}</div>
@@ -47,10 +44,7 @@
         v-for="(item, index) in orders"
         :key="index"
         class="each_order_card"
-        :class="[
-          showSalonSelectBlock ? 'turn_disabled' : '',
-          item.process === 'done' ? 'turn_opacity' : ''
-        ]"
+        :class="[ showSalonSelectBlock || showContactInfo ? 'turn_disabled' : '', item.process === 'done' ? 'turn_opacity' : '']"
       >
         <a-card size="small" :style="[cardStyle]">
           <div class="status_block">
@@ -72,9 +66,7 @@
               <a-select
                 :defaultValue="item.process"
                 style="width: 90px"
-                @change="
-                  setStatus(item.family_id, orders[index].process, item.time)
-                "
+                @change="setStatus(item.family_id, orders[index].process, item.time)"
                 v-model="orders[index].process"
               >
                 <a-select-option value="doing">未完成</a-select-option>
@@ -657,6 +649,7 @@ export default {
       this.showContactInfo = true
     },
     hideContactBlock(){
+      alert('x')
       this.showContactInfo = false
     }
   }
@@ -882,5 +875,33 @@ export default {
 .totoal_num_block
   font-weight: 600
   padding-right: 10px
+
+.contact_block
+  width: 200px
+  height: 100px
+  background-color: $body-background
+  position: absolute
+  z-index: 2
+  top: 50%
+  left: 50%
+  // top: 0
+  // left: 0
+  transform: translate(-50%, -50%)
+
+.topIn-enter
+  top: -1000px
+
+.topIn-enter-active
+  transition: 1.5s
+  
+.topIn-enter-to
+  top: 50%
+
+.topIn-leave-active
+  transition: 1.2s
+
+.topIn-leave-to
+  top: -1000px
+
 
 </style>

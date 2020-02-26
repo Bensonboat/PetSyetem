@@ -1,7 +1,7 @@
 <template>
     <div>
         <div v-for="(item, index) in contact" :key="index">
-            <a :href="'tel:'+ item.phone" slot="extra">{{item.name}} -  {{item.phone}}</a>    
+            <a :href="'tel:'+ item.phone">{{item.name}} -  {{item.phone}}</a>    
         </div>
         <div>
             <button @click="hideContactBlock">取消</button>
