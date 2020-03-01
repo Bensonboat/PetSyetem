@@ -620,21 +620,6 @@ $third-color: #4a707a
   .number_font
     font-size: 18px
 
-// .phone_confirm
-//   background-color: #fff
-//   box-shadow: 1px 3px 5px rgba(0,0,0,.1)
-//   width: 100px
-//   height: 40px
-//   font-size: 16px
-//   margin-top: 30px
-//   background-color: $main-color
-//   color: #fff
-//   letter-spacing: 2px
-//   border-radius: 15px
-//   border: none
-//   outline: none
-//   cursor: pointer
-
 .time_block
   margin-bottom: 10px
   text-align: left
@@ -665,8 +650,6 @@ $third-color: #4a707a
   width: 85vw
 
 .clear_phone
-  // font-size: 18px
-  // color: $fz-color
   font-weight: 700
   font-family: 'Papyrus'
   margin-right: 12px

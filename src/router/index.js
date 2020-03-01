@@ -5,6 +5,7 @@ import List from '../views/orderList';
 import EditFamilyData from '../views/EditFamilyData'
 import LoginPage from '../components/LoginPage'
 import NavTab from '../components/NavTab'
+import HistoryOrder from '../views/HistoryOrder'
 
 Vue.use(VueRouter);
 
@@ -27,7 +28,12 @@ const routes = [
         path: '/EditFamilyData',
         name: 'EditFamilyData',
         component: EditFamilyData
-      }
+      },
+      {
+        path: '/HistoryOrder',
+        name: 'HistoryOrder',
+        component: HistoryOrder
+      }    
     ]
   },
   {
@@ -35,7 +41,7 @@ const routes = [
     redirect: {name: 'LoginPage'}
   },
   {
-    path: "/login",
+    path: "/Login",
     name: "LoginPage",
     component: LoginPage
   },

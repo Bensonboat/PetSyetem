@@ -6,4 +6,27 @@ $text-color-light: #eee;
 $text-color-grey: rgba(0,0,0,.4);
 $text-color-blue: #4a707a;
 
-$danger-color: #BA324F
+$danger-color: #BA324F;
+
+.search_btn {
+    border: none;
+    margin-top: 15px;
+    letter-spacing: 2px;
+    width: 85px;
+    font-size: 12px;
+    user-select: none;
+    -ms-touch-action: manipulation;
+    touch-action: manipulation;
+    height: 32px;
+    padding: 0 15px;
+    border-radius: 4px;
+    position: relative;
+    display: inline-block;
+    font-weight: 500;
+    white-space: nowrap;
+    text-align: center;
+    outline: none;
+    background-color: $main-color;
+    box-shadow: 1px 3px 5px rgba(0,0,0,.1);
+    color: #eee;
+}

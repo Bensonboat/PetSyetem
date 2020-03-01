@@ -592,6 +592,7 @@ export default {
             this.noData = false;
             this.searchingData = false;
           }
+          this.getTotalNumToday();
         });
     },
     getDoneOrders() {
@@ -638,6 +639,7 @@ export default {
             this.noData = false;
             this.searchingData = false;
           }
+          this.getTotalNumToday();
         });
     },
     getTotalNumToday(){
