@@ -17,7 +17,6 @@
         </div>
         <edit-family-data v-if="petSearchFamilyID !== ''" v-show="petSearchFamilyID !== ''" :petSearchFamilyID="petSearchFamilyID" @clearFamilyID="backToPetSearch">
             <div slot="backToPetSearch" class="previous_page" @click="backToPetSearch">
-                1
                 <a-icon type="swap-left" />
             </div>
         </edit-family-data>

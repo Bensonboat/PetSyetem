@@ -1,7 +1,7 @@
 <template>
   <div>
     <div id="nav" class="nav_tab">
-      <router-link to="/" class="tab">首頁</router-link>
+      <router-link to="/Home" class="tab">首頁</router-link>
       <router-link to="/List" class="tab">工作單</router-link>
     </div>
     <div class="view">
@@ -12,19 +12,13 @@
 
 <script>
 export default {
-    name: "navTab"
+    name: "NavTab",
 }
 
 </script>
 
 <style lang="sass" scoped>
-// $main-color: #064789  深藍
-// $main-color: #EF2D56 // 粉色
-// $main-color: #F0386B
-// $main-color: #FF2C55
-// $main-color: #FF4D80
 $main-color: rgb(236, 86, 89)
-
 
 .nav_tab
   background-color: $main-color
@@ -44,7 +38,4 @@ $main-color: rgb(236, 86, 89)
 
 .view
   min-height: -webkit-fill-available
-//   overflow: scroll
-//   position: fixed
-//   width: 100vw
 </style>

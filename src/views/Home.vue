@@ -74,14 +74,14 @@
             class="search_btn"
             @click="phoneSearch"
           >
-            查詢 phone
+            查詢
           </button>
           <button
             v-if="!showPhoneSearch && !noData"
             class="search_btn"
             @click="petNameSearch"
           >
-            查詢 pet
+            查詢
           </button>
           <button
             v-if="noData"
@@ -124,7 +124,7 @@
           @click="addToOrders"
           :style="{ marginBottom: '30px' }"
         >
-          確認 - 工單
+          新增工單
         </button>
       </div>
     </div>
@@ -146,6 +146,9 @@ import editFamilyData from './EditFamilyData'
 
 import { db } from "../firebase";
 const fStore = db.firestore();
+const fAuth = db.auth();
+import firebase from 'firebase/app'
+
 
 const familyRef = fStore.collection('family')
 const petRef = fStore.collection('pet')
@@ -161,6 +164,8 @@ export default {
   },
   data() {
     return {
+      user: {},
+      isAuth: false,
       searching: false,
       phone: "",
       comment: "",
@@ -234,6 +239,19 @@ export default {
       phoneSearchFamilyID: '',
       showEditFamilyData: false
     };
+  },
+  created(){
+    this.$store.dispatch('searchData/validateAuth')
+
+    // fAuth.onAuthStateChanged(user => {
+    //   if (user) {
+    //     this.user = user
+    //     this.isAuth = true
+    //   } else {
+    //     this.user = {}
+    //     this.isAuth = false
+    //   }
+    // })
   },
   mounted() {
     this.getBreedData();
@@ -485,6 +503,7 @@ export default {
 
           alert('已新增至工作單');
           this.petData = [];
+          this.$router.push({path: 'List'})
         }
       }
     },
@@ -541,7 +560,45 @@ export default {
             })
           })
         })
-    }
+    },
+//     login () {
+//       // const authProvider = new firebase.auth.GoogleAuthProvider()
+//       // fAuth.signInWithPopup(authProvider)
+//       //   .then(result => {
+//       //     this.user = result.user
+//       //     this.isAuth = true
+//       //   })
+//       //   .catch(err => console.error(err))
+//     firebase.auth().signInAnonymously().catch(function(error) {
+//       // Handle Errors here.
+//       var errorCode = error.code;
+//       var errorMessage = error.message;
+//       // ...
+//     });
+
+//     firebase.auth().onAuthStateChanged(function(user) {
+//   if (user) {
+//     console.log(user)
+//     // User is signed in.
+//     var isAnonymous = user.isAnonymous;
+//     var uid = user.uid;
+//     // ...
+//   } else {
+//     // User is signed out.
+//     // ...
+//   }
+//   // ...
+// });
+    
+//     },
+//     logout () {
+//       fAuth.signOut()
+//         .then(() => {
+//           this.user = {}
+//           this.isAuth = false
+//         })
+//         .catch(err => console.log(err))
+//     }
   }
 };
 </script>
@@ -664,7 +721,7 @@ $third-color: #4a707a
   border: none
   margin-top: 15px
   letter-spacing: 2px
-  width: 70px
+  width: 85px
   font-size: 12px
   user-select: none
   -ms-touch-action: manipulation

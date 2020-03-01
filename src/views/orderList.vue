@@ -5,13 +5,6 @@
         v-show="showContactInfo"
         class="contact_block"
       >
-        <!-- <div v-for="(item, index) in contactInfo" :key="index">
-            <a :href="'tel:'+ item.phone" slot="extra">{{item.name}} -  {{item.phone}}</a>    
-        </div>
-        <div>
-            <button @click="hideContactBlock">取消</button>
-        </div> -->
-
         <contact-card
           @hideContactBlock="hideContactBlock"
           :contact="contactInfo"
@@ -42,26 +35,13 @@
       <div
         v-else
         v-for="(item, index) in orders"
-        :key="index"
+        :key="item.time"
         class="each_order_card"
         :class="[ showSalonSelectBlock || showContactInfo ? 'turn_disabled' : '', item.process === 'done' ? 'turn_opacity' : '']"
       >
         <a-card size="small" :style="[cardStyle]">
           <div class="status_block">
-            <div @click="showContactCard(index)">查看電話</div>
-            <!-- <a-select
-              :defaultValue="'查看電話'"
-              style="width: 130px"
-              @change="handleChange"
-              @click="showContactCard"
-            >
-              <a-select-option
-                v-for="(value, p_index) in item.phone"
-                :key="p_index"
-                :value="value.phone"
-                >{{ value.name }} - {{ value.phone }}</a-select-option
-              >
-            </a-select> -->
+            <div class="check_contact" @click="showContactCard(index)">查看電話</div>
             <div class="order_edit_block">
               <a-select
                 :defaultValue="item.process"
@@ -75,7 +55,6 @@
               </a-select>
               <div class="edit_block">{{ index + 1 }}</div>
             </div>
-            <!-- <div>{{item.status}}</div> -->
           </div>
           <div
             v-for="(pet, num) in item.data"
@@ -84,19 +63,21 @@
           >
             <div
               class="name_block"
-              @click="editSalonData(pet.family_id, pet.id, item.time)"
             >
-              <span class="name">{{ pet.name }}</span>
-              <span class="breed">- {{ pet.breed }}</span>
+              <div>
+                <span 
+                  class="name"
+                  @click="editSalonData(pet.family_id, pet.id, item.time)"
+                >
+                  {{ pet.name }}
+                </span>
+                <span class="breed">- {{ pet.breed }}</span>
+              </div>
+              <div class="delete_btn" @click="deleteOrderList(index, item.family_id, item.time)">
+                <a-icon type="delete" class="delete_icon"/>
+              </div>
             </div>
-            <div
-              :style="{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                width: '100%'
-              }"
-            >
+            <div class="item_price_block">
               <div class="items_block">
                 <div class="single_item_block" v-if="pet.wash">
                   <button class="salon_item is_selected">洗澡</button>
@@ -122,7 +103,6 @@
                 <div class="single_item_block" v-if="pet.messyHair">
                   <button class="salon_item is_selected">打結</button>
                 </div>
-                <!-- <div class="price_row">           -->
               </div>
               <div>
                 <a-input
@@ -140,7 +120,7 @@
           <input
             placeholder="備註"
             :style="[commentInput]"
-            v-model="orders[index].comment"
+            v-model="item.comment"
             @click="getInitialComment(index)"
             @blur="updateComment(index, item.family_id)"
           />
@@ -351,9 +331,13 @@ export default {
       contactInfo: '',
     };
   },
-  mounted() {
-    this.getAllOrders();
+  created(){
+    this.$store.dispatch('searchData/validateAuth')
     this.getTime();
+    this.getAllOrders();
+  },
+  mounted() {
+    
   },
   methods: {
     handleChange(value) {
@@ -377,13 +361,13 @@ export default {
       let current_date = new Date().getDate();
       let time = new Date(current_year, current_month, current_date).getTime();
       
+      current_month = current_month + 1
       current_month < 10 ? current_month = '0' + current_month : current_month;
       current_date < 10 ? current_date = '0' + current_date : current_date;
       this.todayDate = current_year + " - " + current_month + " - " + current_date;
       return time;
     },
     getAllOrders() {
-      // let family_id_arr = [];
       let time = this.getTime();
       this.searchingData = true;
       this.currentFilter = 'all';
@@ -396,11 +380,13 @@ export default {
 
           querySnapshot.forEach(doc => {
             let current_data = doc.data();
+            current_data['comment'] = ''
 
             // 取得備註
             familyRef.onSnapshot(querySnapshot => {
               querySnapshot.forEach(familyDoc => {
                 if (familyDoc.id === doc.data().family_id) {
+                  
                   current_data["comment"] = familyDoc.data().comment;
                 }
               });
@@ -416,7 +402,6 @@ export default {
               });
             });
             this.orders.push(current_data);
-            this.getTotalNumToday();
           });
 
           if (this.orders.length === 0) {
@@ -426,6 +411,7 @@ export default {
             this.noData = false;
             this.searchingData = false;
           }
+          this.getTotalNumToday();
         });
     },
     // 線上該寵物的美容項目儲存到組件中
@@ -557,6 +543,7 @@ export default {
 
           querySnapshot.forEach(doc => {
             let current_data = doc.data();
+            current_data['comment'] = ''
 
             // 取得備註
             familyRef.onSnapshot(querySnapshot => {
@@ -602,6 +589,7 @@ export default {
           this.orders = [];
           querySnapshot.forEach(doc => {
             let current_data = doc.data();
+            current_data['comment'] = ''
 
             // 取得備註
             familyRef.onSnapshot(querySnapshot => {
@@ -635,12 +623,15 @@ export default {
     },
     getTotalNumToday(){
       let total_num = '';
-
-      this.orders.map(item => {
-        item.data.map(() => {
-          total_num++
-        })
-      });
+      if(this.orders.length !== 0){
+        this.orders.map(item => {
+          item.data.map(() => {
+            total_num++
+          })
+        });
+      } else {
+        total_num = 0
+      }
 
       this.totalNumToday = total_num;
     },
@@ -649,8 +640,23 @@ export default {
       this.showContactInfo = true
     },
     hideContactBlock(){
-      alert('x')
       this.showContactInfo = false
+    },
+    deleteOrderList(index, family_id, time){
+      if(confirm('確定要刪除？')){
+          fStore
+            .collection('order')
+            .where("family_id", "==", family_id)
+            .where('time', '==', time)
+            .get()
+            .then(data => {
+                data.forEach(doc => {
+                  fStore.collection('order').doc(doc.id).delete();
+                  alert('刪除成功');
+                  this.orders.splice(index, 1)
+                });
+            });
+      }
     }
   }
 };
@@ -806,7 +812,7 @@ export default {
   margin-bottom: 15px
 
 .rightIn-enter
-  right: -500px
+  right: -100vh
 
 .rightIn-enter-active
   transition: 1.5s
@@ -821,22 +827,26 @@ export default {
   transition: 1s
 
 .rightIn-leave-to
-  right: -500px
+  right: -100vh
 
 .turn_disabled
   opacity: .5
   pointer-events: none
 
 .name_block
+  display: flex
+  justify-content: space-between
+  width: 100%
   .name
     color: $text-color-blue
-    font-size: 20px
+    font-size: 16px
     margin-right: 5px
     border-bottom: solid 1px $text-color-blue
+    letter-spacing: 2px
 
   .breed
     color: $text-color-grey
-    font-size: 14px
+    font-size: 12px
 
 .today_date
   color: $text-color-blue
@@ -877,31 +887,43 @@ export default {
   padding-right: 10px
 
 .contact_block
-  width: 200px
-  height: 100px
-  background-color: $body-background
   position: absolute
   z-index: 2
   top: 50%
   left: 50%
-  // top: 0
-  // left: 0
   transform: translate(-50%, -50%)
+  border-radius: 5px
+  letter-spacing: 1px
 
 .topIn-enter
   top: -1000px
 
 .topIn-enter-active
-  transition: 1.5s
+  transition: 1s
   
 .topIn-enter-to
   top: 50%
+  transform: translateY(-50%)
 
 .topIn-leave-active
-  transition: 1.2s
+  transition: 1.5s
 
 .topIn-leave-to
   top: -1000px
 
+.check_contact
+  width: 100px
+  color: $text-color-blue
+  font-weight: 600
+
+.item_price_block
+  display: flex
+  justify-content: space-between
+  align-items: center
+  width: 100%
+  margin-top: 5px
+
+.delete_btn
+  color: $danger-color
 
 </style>

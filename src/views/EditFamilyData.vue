@@ -53,7 +53,7 @@
                 <div class="header">備註</div>
                 <input type="text" placeholder="請輸入備註" class="comment" v-model="comment">
             </div>
-            <button class="search_btn update_confirm_btn" @click="updateConfirm">確認更新資料</button>
+            <button class="search_btn update_confirm_btn" @click="updateConfirm">確認更新</button>
         </div>
     </div>
 </template>
@@ -249,6 +249,20 @@ export default {
         //     this.$router.push({ path: '/'})
         // },
         updateConfirm(){
+            // 驗證資料防呆
+            let validate_phone_data = this.validatePhoneData();
+            let validate_pet_data = this.validatePetData();
+
+            if(validate_phone_data === false){
+                alert('請填入電話');
+                return                
+            }
+
+            if(validate_pet_data === false){
+                alert('請輸入寵物名稱及犬種');
+                return
+            }
+
             let new_client = this.$store.state.searchData.new_client;
 
             if(this.petsData.length === 0 || this.phonesData.length === 0){
@@ -367,6 +381,24 @@ export default {
                 this.$emit('clearFamilyID')
             }, 500)
         },
+        validatePhoneData(){
+            let is_pass = true;
+            this.phonesData.map(item => {
+                if(item.phone === ''){
+                    is_pass = false
+                }
+            })
+            return is_pass
+        },
+        validatePetData(){
+            let is_pass = true;
+            this.petsData.map(item => {
+                if(item.breed === '' || item.name === ''){
+                    is_pass = false
+                }
+            });
+            return is_pass
+        }
     },
 }
 
@@ -433,10 +465,6 @@ export default {
     margin-bottom: 2px
     text-align: left
         
-    // span
-    //     width: 30px
-    //     margin-right: 5px
-
     .name
         font-weight: 500
 
@@ -462,7 +490,8 @@ export default {
         font-size: 18px
 
 .update_confirm_btn
-    margin-bottom: 30px
+    margin: 30px 0
+    width: 125px
 
 .no_data
     background-color: $card-color
