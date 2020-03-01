@@ -53,10 +53,7 @@
                 <a-select-option value="done">已完成</a-select-option>
                 <a-select-option value="no_answer">未接</a-select-option>
               </a-select>
-              <!-- <div class="edit_block">{{ index + 1 }}</div> -->
-              <div class="delete_btn" @click="deleteOrderList(index, item.family_id, item.time)">
-                <a-icon type="delete" class="delete_icon"/>
-              </div>
+              <div class="edit_block">{{ index + 1 }}</div>
             </div>
           </div>
           <div
@@ -120,13 +117,18 @@
               </div>
             </div>
           </div>
-          <input
-            placeholder="備註"
-            :style="[commentInput]"
-            v-model="item.comment"
-            @click="getInitialComment(index)"
-            @blur="updateComment(index, item.family_id)"
-          />
+          <div class="comment_row">
+            <input
+              placeholder="備註"
+              :style="[commentInput]"
+              v-model="item.comment"
+              @click="getInitialComment(index)"
+              @blur="updateComment(index, item.family_id)"
+            />
+            <div class="delete_btn" @click="deleteOrderList(index, item.family_id, item.time)">
+              <a-icon type="delete" class="delete_icon"/>
+            </div>
+          </div>
         </a-card>
       </div>
       <!-- 下方為美容項目修改選擇區塊 -->
@@ -297,8 +299,7 @@ export default {
       noData: false,
       searchingData: false,
       commentInput: {
-        width: "100%",
-        marginTop: "10px",
+        width: "90%",
         border: "solid 1px rgba(0,0,0,.1)",
         padding: "4px 12px",
         borderRadius: "5px",
@@ -943,5 +944,11 @@ export default {
 
 .delete_btn
   color: $danger-color
+
+.comment_row 
+  display: flex
+  align-items: center
+  justify-content: space-between
+  margin-top: 10px
 
 </style>
