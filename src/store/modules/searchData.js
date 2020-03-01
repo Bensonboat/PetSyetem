@@ -12,7 +12,7 @@ const actions = {
         let isAuth = sessionStorage.getItem('isAuth')
         if(isAuth === 'false' || isAuth === null){
             alert('請重新登入');
-            router.push({path: '/login'})
+            router.push({path: '/Login'})
         }
     }
 }

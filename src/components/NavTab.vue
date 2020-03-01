@@ -3,6 +3,7 @@
     <div id="nav" class="nav_tab">
       <router-link to="/Home" class="tab">首頁</router-link>
       <router-link to="/List" class="tab">工作單</router-link>
+      <router-link to="/HistoryOrder" class="tab">歷史查詢</router-link>
     </div>
     <div class="view">
       <router-view/>

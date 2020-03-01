@@ -338,9 +338,6 @@ $fz-color: rgba(0,0,0,.4)
   // border-color: $main-color
   color: $main-color
 
-
-  
-
   &.un_select
       border: solid 1px $main-color
       color: $main-color
