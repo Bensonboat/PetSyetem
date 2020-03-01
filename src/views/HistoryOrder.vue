@@ -32,7 +32,10 @@
                 <div class="hide_select_time" @click="hideSelectTime">關閉</div>
             </div>
         </div>
-        <div class="order_list" v-if="historyOrders.length !== 0 && !showSelectTime">
+        <div v-if="loading" :style="[loadingBlock]">
+            <a-icon type="loading"/>
+        </div>
+        <div class="order_list" v-if="historyOrders.length !== 0 && !showSelectTime && !loading">
             <div
                 v-for="item in historyOrders"
                 :key="item.time"
@@ -108,12 +111,12 @@ export default {
         getDate(val){
             val = parseInt(val)
             let date = moment(val).format('YYYY-MM-DD');
-            console.log(val, 'valkll')
             return date
         }
     },
     data(){
         return{
+            loading: false,
             cardStyle: {
                 width: "100%",
                 borderRadius: "6px",
@@ -124,7 +127,15 @@ export default {
                 width: "80px",
                 fontSize: "12px"
             },
-            phone: '0955568035',
+            loadingBlock: {
+                position: "absolute",
+                top: "50%",
+                left: "50%",
+                transform: "translate(-50%, -50%)",
+                fontSize: "70px",
+                color: "#ec5659"
+            },
+            phone: '',
             showSelectTime: false,
             timeScope: '',
             // showStart: false,
@@ -184,6 +195,11 @@ export default {
             this.showSelectTime = true
         },
         searchHistoryOrders(){
+            if(this.phone === ''){
+                alert('請輸入電話');
+                return
+            }
+
             if(this.startDate === '' || this.endDate === ''){
                 alert('請選擇時間');
                 return
@@ -196,6 +212,8 @@ export default {
                 alert('結束時間不可大於開始時間');
                 return
             }
+
+            this.loading = true;
 
 
             let family_id = ''
@@ -218,8 +236,9 @@ export default {
                         .then(data => {
                             data.forEach(doc => {
                                 this.historyOrders.push(doc.data())
-                        })
-                    })            
+                        });
+                        this.loading = false
+                    });           
                 })
         },
         clearPhone() {
