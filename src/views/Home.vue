@@ -561,44 +561,6 @@ export default {
           })
         })
     },
-//     login () {
-//       // const authProvider = new firebase.auth.GoogleAuthProvider()
-//       // fAuth.signInWithPopup(authProvider)
-//       //   .then(result => {
-//       //     this.user = result.user
-//       //     this.isAuth = true
-//       //   })
-//       //   .catch(err => console.error(err))
-//     firebase.auth().signInAnonymously().catch(function(error) {
-//       // Handle Errors here.
-//       var errorCode = error.code;
-//       var errorMessage = error.message;
-//       // ...
-//     });
-
-//     firebase.auth().onAuthStateChanged(function(user) {
-//   if (user) {
-//     console.log(user)
-//     // User is signed in.
-//     var isAnonymous = user.isAnonymous;
-//     var uid = user.uid;
-//     // ...
-//   } else {
-//     // User is signed out.
-//     // ...
-//   }
-//   // ...
-// });
-    
-//     },
-//     logout () {
-//       fAuth.signOut()
-//         .then(() => {
-//           this.user = {}
-//           this.isAuth = false
-//         })
-//         .catch(err => console.log(err))
-//     }
   }
 };
 </script>

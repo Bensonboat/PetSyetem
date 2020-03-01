@@ -53,7 +53,10 @@
                 <a-select-option value="done">已完成</a-select-option>
                 <a-select-option value="no_answer">未接</a-select-option>
               </a-select>
-              <div class="edit_block">{{ index + 1 }}</div>
+              <!-- <div class="edit_block">{{ index + 1 }}</div> -->
+              <div class="delete_btn" @click="deleteOrderList(index, item.family_id, item.time)">
+                <a-icon type="delete" class="delete_icon"/>
+              </div>
             </div>
           </div>
           <div
@@ -72,9 +75,6 @@
                   {{ pet.name }}
                 </span>
                 <span class="breed">- {{ pet.breed }}</span>
-              </div>
-              <div class="delete_btn" @click="deleteOrderList(index, item.family_id, item.time)">
-                <a-icon type="delete" class="delete_icon"/>
               </div>
             </div>
             <div class="item_price_block">
@@ -102,6 +102,9 @@
                 </div>
                 <div class="single_item_block" v-if="pet.messyHair">
                   <button class="salon_item is_selected">打結</button>
+                </div>
+                <div class="single_item_block" v-if="pet.spa">
+                  <button class="salon_item is_selected">SPA</button>
                 </div>
               </div>
               <div>
@@ -250,6 +253,20 @@
             >
               打結
             </button>
+            <button
+              class="salon_item is_selected"
+              v-if="salonSelect.spa"
+              @click="toggleSalonItem('spa', false)"
+            >
+              SPA<a-icon type="check" />
+            </button>
+            <button
+              class="salon_item un_select"
+              v-else
+              @click="toggleSalonItem('spa', true)"
+            >
+              SPA
+            </button>
           </div>
           <div class="update_item_btn_block">
             <button class="salon_item update_item_btn" @click="salonUpdateConfirm">確認<a-icon type="check" /></button>
@@ -301,7 +318,8 @@ export default {
         mouth: false,
         bug: false,
         herbWash: false,
-        messyHair: false
+        messyHair: false,
+        spa: false
       },
       showSalonSelectBlock: false,
       currentSelect: {
@@ -887,7 +905,7 @@ export default {
   padding-right: 10px
 
 .contact_block
-  position: absolute
+  position: fixed
   z-index: 2
   top: 50%
   left: 50%

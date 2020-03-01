@@ -129,11 +129,19 @@
                 class="salon_item un_select">打結
               </button>
             </div>
+            <div class="single_item_block">
+              <button
+                v-if="item.spa"
+                @click="toggle(index, 'spa', item.spa)"
+                class="salon_item is_selected">SPA<a-icon type="check" />
+              </button>
+              <button 
+                v-else
+                @click="toggle(index, 'spa', item.spa)"
+                class="salon_item un_select">SPA
+              </button>
+            </div>
           </div>
-          <!-- <div :style="{padding: '4px 5px'}">
-            <a-icon v-if="!item.showComment" type="down-circle" @click="showCommentBlock(index)"/>
-            <a-input v-else placeholder="備註" :style="[commentInput]" v-model="item.comment"/>
-          </div> -->
           <div class="price_row">
             <div>
               <span class="price_txt">金額:</span>
@@ -146,7 +154,6 @@
               />
             </div>
             <button v-if="!editData" class="dog_card_select" :class="[item.status ? 'is_selected' : '']" @click="toggle(index, 'status', item.status)"><a-icon type="check" /></button>
-            <!-- <button v-else class="dog_card_select un_select" @click="toggle(index, 'status', item.status)">NO <a-icon type="frown" class="status_icon"/></button> -->
           </div>
           <div v-if="editData" class="status_row">
             <div class="status_operation">
@@ -154,6 +161,7 @@
               <a-select defaultValue="normal" style="width: 120px" v-model="item.reject" class="reject_pet">
                 <a-select-option value="reject">拒接</a-select-option>
                 <a-select-option value="normal">正常</a-select-option>
+                <a-select-option value="vip">VIP</a-select-option>
               </a-select>
             </div>
             <!-- <slot name="delete_pet"></slot> -->
@@ -242,31 +250,7 @@ export default {
 
 <style lang="sass">
 @import '../styles/basics/_common_var.scss'
-
-//!!FF2C55
-
 $fz-color: rgba(0,0,0,.4)
-// $item-btn-bgc: #283c63
-// $item-btn-bgc: #008891
-// $item-btn-bgc: #65c0ba
-// $item-btn-color: #455d7a
-
-// $main-color: #4a707a  // last one 灰藍
-// $main-color: #064789  // 深藍
-// $main-color: #EF2D56 // 粉色
-// $main-color: #F0386B
-// $main-color: #E34A6F
-// $main-color: #FF4D80
-// $main-color: rgb(219, 71, 80)
-
-
-// $item-btn-color: #fefaec
-// $second-btn-color: #216583
-// $second-color: #7697a0
-// $second-color: #FF2C55
-
-// $third-color: #4a707a
-
 
 .card_block
     background-color: #fff

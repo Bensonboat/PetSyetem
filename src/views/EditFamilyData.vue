@@ -175,6 +175,7 @@ export default {
                 bug: false,
                 herbWash: false,
                 messyHair: false,
+                spa: false,
                 price: '',
                 status: false,
                 reject: 'normal'
