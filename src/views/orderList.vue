@@ -351,7 +351,7 @@ export default {
     };
   },
   created(){
-    this.$store.dispatch('searchData/validateAuth')
+    // this.$store.dispatch('searchData/validateAuth')
     this.getTime();
     this.getAllOrders();
   },
@@ -383,7 +383,7 @@ export default {
       current_month = current_month + 1
       current_month < 10 ? current_month = '0' + current_month : current_month;
       current_date < 10 ? current_date = '0' + current_date : current_date;
-      this.todayDate = current_year + " - " + current_month + " - " + current_date;
+      this.todayDate = current_year + "-" + current_month + "-" + current_date;
       return time;
     },
     getAllOrders() {
@@ -394,7 +394,8 @@ export default {
       orderRef
         .where("time", ">", time) // 秀今天的工作單
         .orderBy("time", "asc")
-        .onSnapshot(querySnapshot => {
+        .get()
+        .then(querySnapshot => {
           this.orders = [];
 
           querySnapshot.forEach(doc => {
@@ -402,24 +403,28 @@ export default {
             current_data['comment'] = ''
 
             // 取得備註
-            familyRef.onSnapshot(querySnapshot => {
-              querySnapshot.forEach(familyDoc => {
-                if (familyDoc.id === doc.data().family_id) {
-                  
-                  current_data["comment"] = familyDoc.data().comment;
-                }
+            familyRef
+              .get()
+              .then(querySnapshot => {
+                querySnapshot.forEach(familyDoc => {
+                  if (familyDoc.id === doc.data().family_id) {
+                    
+                    current_data["comment"] = familyDoc.data().comment;
+                  }
+                });
               });
-            });
 
             // 取得電話
             current_data["phone"] = [];
-            memberRef.onSnapshot(querySnapshot => {
-              querySnapshot.forEach(memberDoc => {
-                if (memberDoc.data().family_id === doc.data().family_id) {
-                  current_data["phone"].push(memberDoc.data().phone);
-                }
+            memberRef
+              .get()
+              .then(querySnapshot => {
+                querySnapshot.forEach(memberDoc => {
+                  if (memberDoc.data().family_id === doc.data().family_id) {
+                    current_data["phone"].push(memberDoc.data().phone);
+                  }
+                });
               });
-            });
             this.orders.push(current_data);
           });
 
@@ -529,7 +534,6 @@ export default {
               updated_data.push(item);
             });
 
-            this.orders = []; //清空等等更新完拿回新資料
             orderRef.doc(doc.id).update({ data: updated_data });
 
             alert("更新成功");
@@ -873,7 +877,6 @@ export default {
   color: $text-color-blue
   font-weight: 500
   text-align: left
-  font-size: 18px
   font-size: 14px
 
 .turn_opacity

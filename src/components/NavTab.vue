@@ -14,6 +14,9 @@
 <script>
 export default {
     name: "NavTab",
+    mounted(){
+      this.$store.dispatch('searchData/validateAuth')
+    },
 }
 
 </script>

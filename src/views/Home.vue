@@ -8,8 +8,8 @@
     </div>
     <div v-else v-show="!showEditFamilyData">
       <div class="home" :class="[this.showCard ? 'card_showing' : '']">
-        <div v-if="showPhoneSearch" class="search_text">電話</div>
-        <div v-else class="search_text">寵物</div>
+        <!-- <div v-if="showPhoneSearch" class="search_text">電話</div> -->
+        <!-- <div v-else class="search_text">寵物</div> -->
         <div class="enter_phone_block">
           <div v-if="showPhoneSearch" class="phone_search">
             <input
@@ -43,7 +43,7 @@
               <div class="breed_select_block">
                 <div :style="[breedSelectBlcok]">犬種</div>
                 <a-select
-                  style="width: 75px"
+                  style="width: 100px"
                   v-model="nameData.breed"
                 >
                   <a-select-option
@@ -64,11 +64,15 @@
 
             </div>
           </div>
-          <div :style="[switchIcon]" @click="switchSearchMode(showPhoneSearch)">
+          <!-- <div :style="[switchIcon]" @click="switchSearchMode(showPhoneSearch)">
             <a-icon type="sync" :style="{lineHeight: '50px'}"/>
-          </div>
+          </div> -->
         </div>
         <div v-if="!showCard">
+          <div @click="switchSearchMode(showPhoneSearch)" class="switch_mode_icon">
+            <a-icon type="sync"/>
+          </div>
+
           <button
             v-if="showPhoneSearch && !noData"
             class="search_btn"
@@ -241,7 +245,7 @@ export default {
     };
   },
   created(){
-    this.$store.dispatch('searchData/validateAuth')
+    // this.$store.dispatch('searchData/validateAuth')
 
     // fAuth.onAuthStateChanged(user => {
     //   if (user) {
@@ -582,9 +586,9 @@ $second-color: #FF2C55
 $third-color: #4a707a
 
 
-.home
-  margin: 30px auto 0 auto
-  width: 80vw
+// .home
+//   margin: 30px auto 0 auto
+//   width: 80vw
 
 .search_text
   text-align: left
@@ -601,7 +605,7 @@ $third-color: #4a707a
 .phone_search
   padding: 8px 12px
   height: 50px
-  border-radius: 5px 0 0 5px
+  // border-radius: 5px 0 0 5px
   background-color: #fff
   display: flex
   align-items: center
@@ -716,4 +720,20 @@ $third-color: #4a707a
   font-size: 35px
   margin-top: 10px
 
+.switch_mode_icon 
+  margin-top: 15px
+  text-align: center
+  color: white
+  width: 25px
+  height: 25px
+  line-height: 30px
+  background-color: #ec5659
+  border-radius: 100%
+  position: relative
+  margin-left: 90vw
+  i 
+    position: absolute
+    top: 50%
+    left: 50%
+    transform: translate(-50%, -50%)
 </style>

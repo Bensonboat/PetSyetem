@@ -29,13 +29,14 @@
                 <div v-if="timeScope === 'start'" class="calendar_header">開始時間</div>
                 <div v-else class="calendar_header">結束時間</div>
                 <a-calendar @select="onSelect" @panelChange="onPanelChange" />
-                <div class="hide_select_time" @click="hideSelectTime">關閉</div>
             </div>
+            <div class="hide_select_time" @click="hideSelectTime">確定</div>
         </div>
         <div v-if="loading" :style="[loadingBlock]">
             <a-icon type="loading"/>
         </div>
-        <div class="order_list" v-if="historyOrders.length !== 0 && !showSelectTime && !loading">
+        <div class="order_list" v-if="!showSelectTime && !loading">
+            <div v-if="noData" class="no_data_block"><a-icon type="warning" />查無資料</div>
             <div
                 v-for="item in historyOrders"
                 :key="item.time"
@@ -117,6 +118,7 @@ export default {
     data(){
         return{
             loading: false,
+            noData: false,
             cardStyle: {
                 width: "100%",
                 borderRadius: "6px",
@@ -142,33 +144,7 @@ export default {
             // value: moment('2017-01-25'),
             startDate: '',
             endDate: '',
-            historyOrders: [
-                // {
-                //     family_id: '',
-                //     process: '',
-                //     time: '',
-                //     data: [
-                //         {
-                //             family_id: this.familyID,
-                //             id: '',
-                //             name: '11',
-                //             breed: '22',
-                //             wash: true,
-                //             cut: false,
-                //             head: false,
-                //             feet: false,
-                //             mouth: true,
-                //             bug: false,
-                //             herbWash: false,
-                //             messyHair: false,
-                //             spa: false,
-                //             price: '500',
-                //             status: false,
-                //             reject: 'normal'
-                //         }
-                //     ]
-                // }
-            ]
+            historyOrders: []
         }
     },
     methods: {
@@ -195,18 +171,16 @@ export default {
             this.showSelectTime = true
         },
         searchHistoryOrders(){
-            if(this.phone === ''){
-                alert('請輸入電話');
-                return
-            }
+            // if(this.startDate === '' || this.endDate === ''){
+            //     alert('請選擇時間');
+            //     return
+            // }
 
-            if(this.startDate === '' || this.endDate === ''){
-                alert('請選擇時間');
-                return
-            }
+            let startDate = this.startDate.startOf('day').format('YYYY-MM-DD HH:mm:ss');
+            let endDate = this.endDate.endOf('day').format('YYYY-MM-DD HH:mm:ss');
 
-            let startDate = this.startDate.valueOf();
-            let endDate = this.endDate.valueOf();
+            startDate = moment(startDate).valueOf();
+            endDate = moment(endDate).valueOf();
 
             if(startDate > endDate){
                 alert('結束時間不可大於開始時間');
@@ -214,32 +188,61 @@ export default {
             }
 
             this.loading = true;
+            this.historyOrders = [];
 
-
-            let family_id = ''
-            memberRef
-                .get()
-                .then(data => {
-                    data.forEach(doc => {
-                        if(doc.data().phone.phone === this.phone){
-                            family_id = doc.data().family_id
-                        }
+            let family_id = '';
+            let no_data = false;
+            if(this.phone !== ''){
+                memberRef
+                    .get()
+                    .then(data => {
+                        data.forEach(doc => {
+                            if(doc.data().phone.phone === this.phone){
+                                family_id = doc.data().family_id
+                            }
+                        })
                     })
-                })
-                .then(() => {
-                    orderRef
-                        .where('family_id', '==', family_id)
-                        .where('time', '>', startDate)
-                        .where('time', '<', endDate)
-                        .orderBy("time", "asc")
-                        .get()
-                        .then(data => {
-                            data.forEach(doc => {
-                                this.historyOrders.push(doc.data())
-                        });
-                        this.loading = false
-                    });           
-                })
+                    .then(() => {
+                        orderRef
+                            .where('family_id', '==', family_id)
+                            .where('time', '>', startDate)
+                            .where('time', '<', endDate)
+                            .orderBy("time", "asc")
+                            .get()
+                            .then(data => {
+                                data.forEach(doc => {
+                                    this.historyOrders.push(doc.data())
+                                    no_data = true;
+                            });
+
+                            if(no_data === true){
+                                this.noData = false
+                            } else {
+                                this.noData = true
+                            }
+                            this.loading = false
+                        });           
+                    })
+            } else {
+                orderRef
+                    .where('time', '>', startDate)
+                    .where('time', '<', endDate)
+                    .orderBy("time", "asc")
+                    .get()
+                    .then(data => {
+                        data.forEach(doc => {
+                            this.historyOrders.push(doc.data())
+                            no_data = true;
+                    });
+
+                    if(no_data === true){
+                        this.noData = false
+                    } else {
+                        this.noData = true
+                    }
+                    this.loading = false
+                });           
+            }
         },
         clearPhone() {
             this.phone = "";
@@ -258,7 +261,7 @@ export default {
     color: white
     padding: 8px 12px
     font-size: 12px
-    position: fixed
+    position: absolute
     bottom: 0
 
 .time_text_block
