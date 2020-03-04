@@ -7,9 +7,7 @@
       <a-icon type="loading" />
     </div>
     <div v-else v-show="!showEditFamilyData">
-      <div class="home" :class="[this.showCard ? 'card_showing' : '']">
-        <!-- <div v-if="showPhoneSearch" class="search_text">電話</div> -->
-        <!-- <div v-else class="search_text">寵物</div> -->
+      <div :class="[this.showCard ? 'card_showing' : '']">
         <div class="enter_phone_block">
           <div v-if="showPhoneSearch" class="phone_search">
             <input
@@ -243,19 +241,6 @@ export default {
       phoneSearchFamilyID: '',
       showEditFamilyData: false
     };
-  },
-  created(){
-    // this.$store.dispatch('searchData/validateAuth')
-
-    // fAuth.onAuthStateChanged(user => {
-    //   if (user) {
-    //     this.user = user
-    //     this.isAuth = true
-    //   } else {
-    //     this.user = {}
-    //     this.isAuth = false
-    //   }
-    // })
   },
   mounted() {
     this.getBreedData();
@@ -572,23 +557,8 @@ export default {
 <style lang="sass">
 @import '../styles/basics/_common_var.scss'
 
-// !!FF2C55
 $fz-color: rgba(0,0,0,.4)
-// $main-color: #49D49D
-// $main-color: #99ddcc
-// $main-color: #064789 深藍
-// $main-color: #EF2D56 // 粉色
-// $main-color: #F0386B
 $main-color: #ec5659
-
-$second-color: #FF2C55
-
-$third-color: #4a707a
-
-
-// .home
-//   margin: 30px auto 0 auto
-//   width: 80vw
 
 .search_text
   text-align: left

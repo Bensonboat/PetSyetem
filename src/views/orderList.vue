@@ -129,6 +129,10 @@
               <a-icon type="delete" class="delete_icon"/>
             </div>
           </div>
+          <div class="order_status_time">
+            <div>建單: {{item.time | secondsToDigitalTime}}</div>
+            <div v-if="item.finish_time !== undefined">完成: {{item.finish_time}}</div>
+          </div>      
         </a-card>
       </div>
       <!-- 下方為美容項目修改選擇區塊 -->
@@ -283,6 +287,7 @@
 <script>
 import { db } from "../firebase";
 import contactCard from '@/components/ContactCard';
+import moment from 'moment';
 
 const fStore = db.firestore();
 const orderRef = fStore.collection("order");
@@ -329,7 +334,7 @@ export default {
       },
       cardStyle: {
         width: "100%",
-        padding: "6px 12px 12px 12px",
+        padding: "6px 12px 0 12px",
         borderRadius: "6px",
         border: "none",
         borderTop: "solid 20px #ec5659"
@@ -351,12 +356,14 @@ export default {
     };
   },
   created(){
-    // this.$store.dispatch('searchData/validateAuth')
     this.getTime();
     this.getAllOrders();
   },
-  mounted() {
-    
+  filters: {
+    secondsToDigitalTime(val){
+      let order_time = moment(val).format('YYYY/MM/DD HH:mm').split(' ')[1];
+      return order_time
+    }
   },
   methods: {
     handleChange(value) {
@@ -364,11 +371,11 @@ export default {
       // console.log(`selected ${value}`);
     },
     setStatus(id, process, time) {
+      let current_time = moment().format('YYYY/MM/DD HH:mm').split(' ')[1]
       orderRef.get().then(data => {
         data.forEach(doc => {
           if (doc.data().family_id === id && doc.data().time === time) {
-            // this.orders = []; //清空等等更新完拿回新資料     
-            orderRef.doc(doc.id).update({ process: process });
+            orderRef.doc(doc.id).update({ process: process, finish_time:  current_time});
           }
         });
       });
@@ -954,6 +961,14 @@ export default {
   display: flex
   align-items: center
   justify-content: space-between
+  margin-top: 10px
+
+.order_status_time
+  display: flex
+  justify-content: space-between
+  font-size: 12px
+  color: rgba(0,0,0,.5)
+  font-weight: 600
   margin-top: 10px
 
 </style>
