@@ -23,7 +23,7 @@ export default{
           current_height = current_height - 20
           this.$refs.app_block.scrollTop = current_height
         } else {
-          return
+          clearInterval()
         }
       }, 1)
     }

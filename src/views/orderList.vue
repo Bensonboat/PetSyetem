@@ -27,7 +27,7 @@
     <div v-if="searchingData" :style="[loadingBlock]">
       <a-icon type="loading" />
     </div>
-    <div v-else>
+    <div v-else class="all_lists_block">
       <div v-if="noData" class="no_orders">
         <a-icon type="warning" />
         查無資料
@@ -342,7 +342,7 @@ export default {
         padding: "6px 12px 0 12px",
         borderRadius: "6px",
         border: "none",
-        borderTop: "solid 20px #ec5659"
+        borderTop: "solid 20px #ec5659",
       },
       loadingBlock: {
         position: "absolute",
@@ -752,8 +752,10 @@ export default {
   font-size: 16px
 
 .each_order_card
-  margin: 10px 0
+  margin: 10px
   box-shadow: -3px 3px 5px rgba(0,0,0,.1)
+  width: 340px
+  // min-width: 340px
 
 .price_row
   display: flex
@@ -980,14 +982,21 @@ export default {
   margin-top: 10px
 
 .to_top_btn 
-  position: absolute
+  position: fixed
   bottom: 40px
   right: 40px
-  width: 40px
-  height: 40px
+  width: 35px
+  height: 35px
   background-color: lightgray
-  line-height: 40px
-  opacity: .5
+  line-height: 35px
+  opacity: .7
   z-index: 3
+  border-radius: 5px
+
+.all_lists_block
+  margin: auto
+  display: flex
+  flex-wrap: wrap
+  justify-content: center
 
 </style>
