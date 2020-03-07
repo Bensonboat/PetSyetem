@@ -121,7 +121,7 @@
           <family-card 
             v-if="showCard && !showPhoneSearch" 
             :petSearchData="petSearchData"
-            @getFamilyIDFromFamilyCard="getFamilyIDFromFamilyCard"/>
+            @getDataFromFamilyCard="getDataFromFamilyCard"/>
         </transition>
         <button
           v-if="showCard && !noData && showPhoneSearch"
@@ -558,12 +558,13 @@ export default {
           })
         })
     },
-    getFamilyIDFromFamilyCard(val){
+    getDataFromFamilyCard(val){
       // val from family card
-      this.familyID = val;
-      this.getCertainPetData(); // 有ID 後獲取寵物資料
-      this.showCard = true;
+      // this.familyID = val.family_id;
+      this.phone = val.phone;
+      this.phoneSearch();
       this.showPhoneSearch = true;
+      this.petSearchData = []
     }
   }
 };

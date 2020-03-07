@@ -7,7 +7,7 @@
                     <div class="name_title_text">{{item.name}} ( {{item.breed}} )</div>
                 </div>
                 <!-- <div class="get_more_info" @click="editFamilyData(item.family_id)"> -->
-                <div class="get_more_info" @click="getFamilyIDFromFamilyCard(item.family_id)">
+                <div class="get_more_info" @click="getDataFromFamilyCard(item.family_id)">
                     <a-icon type="search" />
                 </div>
             </div>
@@ -26,6 +26,8 @@
 
 <script>
 import editFamilyData from '../views/EditFamilyData'
+import { db } from "../firebase";
+const fStore = db.firestore();
 
 export default {
     name: 'FamilyCard',
@@ -46,9 +48,35 @@ export default {
         backToPetSearch(){
             this.petSearchFamilyID = ''
         },
-        getFamilyIDFromFamilyCard(id){
-            this.$emit('getFamilyIDFromFamilyCard', id)
-        }
+        getDataFromFamilyCard(id){
+            this.getPhonesData(id).then(res => {
+                let data = {
+                    family_id: id,
+                    phone: res[0].phone
+                }
+                this.$emit('getDataFromFamilyCard', data)
+            })
+            // this.$emit('getDataFromFamilyCard', phones[0])
+        },
+        getPhonesData(id){
+            return new Promise(resolve => {           
+                let phones = [];
+                fStore
+                    .collection("member")
+                    .where("family_id", "==", id)
+                    .get()
+                    .then(data => {
+                        data.forEach(doc => {
+                            phones.push(doc.data().phone)
+                            console.log(phones)
+                        });
+                    })
+                    .then(() => {
+                        resolve(phones)
+                    })
+            })
+            
+        },
     }
 }
 </script>
