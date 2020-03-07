@@ -135,6 +135,11 @@
           </div>      
         </a-card>
       </div>
+      <div 
+        class="to_top_btn"
+        @click="scrollHeightToTop">
+          <a-icon type="arrow-up"/>
+        </div>
       <!-- 下方為美容項目修改選擇區塊 -->
       <transition name="rightIn">
         <div class="salon_select_block" v-show="showSalonSelectBlock">
@@ -689,6 +694,9 @@ export default {
                 });
             });
       }
+    },
+    scrollHeightToTop(){
+      this.$emit('scrollHeightToTop')
     }
   }
 };
@@ -970,5 +978,16 @@ export default {
   color: rgba(0,0,0,.5)
   font-weight: 600
   margin-top: 10px
+
+.to_top_btn 
+  position: absolute
+  bottom: 40px
+  right: 40px
+  width: 40px
+  height: 40px
+  background-color: lightgray
+  line-height: 40px
+  opacity: .5
+  z-index: 3
 
 </style>

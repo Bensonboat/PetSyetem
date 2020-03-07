@@ -1,6 +1,6 @@
 <template>
-  <div id="app">
-    <router-view/>
+  <div id="app" ref="app_block">
+    <router-view @scrollHeightToTop="scrollHeightToTop"/>
     <!-- <nav-tab/> -->
     <!-- <img src="./assets/No.018.jpg" alt=""> -->
   </div>
@@ -11,6 +11,22 @@ export default{
   name: 'App',
   components: {
     navTab
+  },
+  methods: {
+    scrollHeightToTop(){
+      let current_height = this.$refs.app_block.scrollTop;
+      if(current_height > 2000 && current_height !== 0){
+        current_height = 2000
+      }
+      setInterval(() => {
+        if(current_height !== 0){
+          current_height = current_height - 20
+          this.$refs.app_block.scrollTop = current_height
+        } else {
+          return
+        }
+      }, 1)
+    }
   }
 }
 </script>

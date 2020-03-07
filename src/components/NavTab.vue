@@ -6,7 +6,7 @@
       <router-link to="/HistoryOrder" class="tab">歷史查詢</router-link>
     </div>
     <div class="view">
-      <router-view/>
+      <router-view @scrollHeightToTop="scrollHeightToTop"/>
     </div>
   </div>
 </template>
@@ -17,6 +17,11 @@ export default {
     mounted(){
       this.$store.dispatch('searchData/validateAuth')
     },
+    methods: {
+      scrollHeightToTop(){
+        this.$emit('scrollHeightToTop')
+      }
+    }
 }
 
 </script>
