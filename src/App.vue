@@ -19,9 +19,10 @@ export default{
         current_height = 2000
       }
       setInterval(() => {
-        if(current_height !== 0){
+        if(current_height > 0){
           current_height = current_height - 20
           this.$refs.app_block.scrollTop = current_height
+          console.log(current_height,'333')
         } else {
           clearInterval()
         }
