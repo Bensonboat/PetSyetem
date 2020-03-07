@@ -118,7 +118,10 @@
               />
             </div>
           </pet-card>
-          <family-card v-if="showCard && !showPhoneSearch" :petSearchData="petSearchData"></family-card>
+          <family-card 
+            v-if="showCard && !showPhoneSearch" 
+            :petSearchData="petSearchData"
+            @getFamilyIDFromFamilyCard="getFamilyIDFromFamilyCard"/>
         </transition>
         <button
           v-if="showCard && !noData && showPhoneSearch"
@@ -245,6 +248,11 @@ export default {
   mounted() {
     this.getBreedData();
     this.$store.commit('searchData/checkClientStatus', false) // 確認是不是第一次來的客人
+
+    let petSearchFamilyID = this.$store.state.searchData.family_id;
+    if(this.petSearchFamilyID !== ''){
+
+    }
   },
   watch: {
     phone() {
@@ -550,6 +558,13 @@ export default {
           })
         })
     },
+    getFamilyIDFromFamilyCard(val){
+      // val from family card
+      this.familyID = val;
+      this.getCertainPetData(); // 有ID 後獲取寵物資料
+      this.showCard = true;
+      this.showPhoneSearch = true;
+    }
   }
 };
 </script>
@@ -608,16 +623,16 @@ $main-color: #ec5659
   top: 20%
 
 .fade-enter
-  transform: translateY(500px)
+  transform: translateY(-500px)
 
 .fade-enter-active
-  transition: 2s
+  transition: 1s
 
-.fade-leave-active
-  transition: 1.5s
+// .fade-leave-active
+//   transition: 1s
 
-.fade-leave-to
-  transform: translateY(1000px)
+// .fade-leave-to
+//   transform: translateY(1000px)
 
 .show_card_block
   margin: 30px auto 0 auto
@@ -694,8 +709,8 @@ $main-color: #ec5659
   margin-top: 15px
   text-align: center
   color: white
-  width: 25px
-  height: 25px
+  width: 30px
+  height: 30px
   line-height: 30px
   background-color: #ec5659
   border-radius: 100%

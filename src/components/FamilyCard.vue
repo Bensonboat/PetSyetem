@@ -6,7 +6,8 @@
                     <div>名稱: </div>
                     <div class="name_title_text">{{item.name}} ( {{item.breed}} )</div>
                 </div>
-                <div class="get_more_info" @click="editFamilyData(item.family_id)">
+                <!-- <div class="get_more_info" @click="editFamilyData(item.family_id)"> -->
+                <div class="get_more_info" @click="getFamilyIDFromFamilyCard(item.family_id)">
                     <a-icon type="search" />
                 </div>
             </div>
@@ -44,6 +45,9 @@ export default {
         },
         backToPetSearch(){
             this.petSearchFamilyID = ''
+        },
+        getFamilyIDFromFamilyCard(id){
+            this.$emit('getFamilyIDFromFamilyCard', id)
         }
     }
 }
@@ -78,6 +82,7 @@ export default {
 .other_pet
     display: flex
     padding: 4px 8px
+    flex-wrap: wrap
 
 .pet_result
     margin-left: 5px

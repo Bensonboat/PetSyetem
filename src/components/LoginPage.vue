@@ -80,7 +80,6 @@ export default {
                             firebase.auth().onAuthStateChanged(function(user) {
                                 isAuth = true
                                 sessionStorage.setItem('isAuth', true)
-                                // that.$store.commit('searchData/setAuthStatus', true)
                             });
                         }
                     })

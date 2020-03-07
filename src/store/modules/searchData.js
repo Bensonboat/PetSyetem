@@ -4,7 +4,6 @@ const state = {
     family_id: '',
     new_client: false,
     phone: '',
-    authStatus: false // 登入權限
 }
 
 const actions = {
